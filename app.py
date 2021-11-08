@@ -1,0 +1,15 @@
+from flask import Flask, jsonify
+from flask_restful import Api
+from resources import ef, memebers, monthly
+
+
+app = Flask(__name__)
+api = Api(app)
+
+api.add_resource(ef.EmergencyFunds, '/emergencyFunds')
+api.add_resource(memebers.Members, '/members')
+api.add_resource(monthly.Months, '/months')
+
+
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)
