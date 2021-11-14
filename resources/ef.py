@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 from db.ef import EmergencyFundFunctions
-
+from util.jwt_functions import authenticate
 
 class EmergencyFunds(Resource):
     _ef_db= EmergencyFundFunctions()
@@ -16,16 +16,22 @@ class EmergencyFunds(Resource):
                             help="Rate x 0.XX times"
                             )
     def post(self):
-        try:
-            result = EmergencyFunds._ef_db.ef_initialization()
-            return {"Created":"YES"}, 201
-        except Exception as err:
-            print(err, type(err))
-            return {"message": "An error occurred creating EF."}, 500
+        @authenticate
+        def create_ef():
+            try:
+                result = EmergencyFunds._ef_db.ef_initialization()
+                return {"Created":"YES"}, 201
+            except Exception as err:
+                print(err, type(err))
+                return {"message": "An error occurred creating EF."}, 500
+        return create_ef()
 
     
     def put(self):
-        data= EmergencyFunds._ef_Parser.parse_args()
-        EmergencyFunds._ef_db.ef_update_flat_rate(**data)
-        return {"Updated": "YES"}, 200
+        @authenticate
+        def update_ef():
+            data= EmergencyFunds._ef_Parser.parse_args()
+            EmergencyFunds._ef_db.ef_update_flat_rate(**data)
+            return {"Updated": "YES"}, 200
+        return update_ef
 

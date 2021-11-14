@@ -1,5 +1,6 @@
 from flask_restful import Resource, reqparse
 from db.members import MemeberFunctions
+from util.jwt_functions import authenticate
 
 class Members(Resource):
     _members_db= MemeberFunctions()
@@ -39,28 +40,37 @@ class Members(Resource):
                             help="Privilage to be set for that Flat Number"
                             )
     def post(self):
-        try:
-            data = Members._members_emails.parse_args()
-            Members._members_db.add_emails(**data)
-            return {},201
-        except Exception as err:
-            print(err, type(err))
-            return {"message": "An error occurred Adding Emails"}, 500
+        @authenticate
+        def add_emails():
+            try:
+                data = Members._members_emails.parse_args()
+                Members._members_db.add_emails(**data)
+                return {},201
+            except Exception as err:
+                print(err, type(err))
+                return {"message": "An error occurred Adding Emails"}, 500
+        return add_emails()
     
     def put(self):
-        try:
-            data = Members._members_password.parse_args()
-            Members._members_db.update_password(**data)
-            return {},200
-        except Exception as err:
-            print(err, type(err))
-            return {"message": "An error occurred updating password."}, 500
+        @authenticate
+        def update_password():
+            try:
+                data = Members._members_password.parse_args()
+                Members._members_db.update_password(**data)
+                return {},200
+            except Exception as err:
+                print(err, type(err))
+                return {"message": "An error occurred updating password."}, 500
+        return update_password()
     
     def options(self):
-        try:
-            data = Members._members_admin_privilage.parse_args()
-            Members._members_db.toggle_admin_privilage(**data)
-            return {},200
-        except Exception as err:
-            print(err, type(err))
-            return {"message": "An error occurred updating privilages."}, 500
+        @authenticate
+        def toggle_admin():
+            try:
+                data = Members._members_admin_privilage.parse_args()
+                Members._members_db.toggle_admin_privilage(**data)
+                return {},200
+            except Exception as err:
+                print(err, type(err))
+                return {"message": "An error occurred updating privilages."}, 500
+        return toggle_admin()
