@@ -2,6 +2,7 @@ from flask_restful import Resource
 from flask import request
 from db.monthly import MonthlyFunctions
 from util.jwt_functions import authenticate
+import traceback
 
 class Months(Resource):
     _monthly_db=MonthlyFunctions()
@@ -13,12 +14,13 @@ class Months(Resource):
             queryParams=request.args
             try:
                 month=Months._months[int(queryParams.get('month'))-1]
-                year=queryParams.get('year')
+                year=int(queryParams.get('year'))
                 print(month,year)
                 Months._monthly_db.create_monthly_dist(month=month,year=year,est=requestData['estimates'],flats=requestData['payingFlats'])
                 Months._monthly_db.populate_unsold(month=month,year=year,flats=requestData['unsoldFlats'])
                 Months._monthly_db.idiot_box(month=month,year=year, flats=requestData['notPayingFlats'])
             except Exception as err:
+                traceback.print_exc()
                 print(err, type(err))
                 return {"message": "An error occurred Creating Monthly Distribution"}, 500
             return {},201
@@ -31,9 +33,10 @@ class Months(Resource):
             queryParams=request.args
             try:
                 month=Months._months[int(queryParams.get('month'))-1]
-                year=queryParams.get('year')
+                year=int(queryParams.get('year'))
                 Months._monthly_db.update_payment_status(month=month,year=year,flats=requestData['flats'])
             except Exception as err:
+                traceback.print_exc()
                 print(err, type(err))
                 return {"message": "An error occurred updating payments"}, 500
             return {},200
@@ -48,10 +51,11 @@ class Months(Resource):
                 monthNumber=int(queryParams.get('month'))
                 month=Months._months[monthNumber-1]
                 prev=Months._months[monthNumber-2]
-                curr_year=queryParams.get('year')
+                curr_year=int(queryParams.get('year'))
                 prev_year = curr_year-1 if monthNumber == 1 else curr_year
                 Months._monthly_db.update_expenses(month=month,prev_month=prev,year=curr_year,prev_year=prev_year,exp=requestData['expenditures'])
             except Exception as err:
+                traceback.print_exc()
                 print(err, type(err))
                 return {"message": "An error occurred updating expenses"}, 500
             return {},200
@@ -65,9 +69,10 @@ class Months(Resource):
             try:
                 monthNumber=int(queryParams.get('month'))
                 month=Months._months[monthNumber-1]
-                year=queryParams.get('year')
+                year=int(queryParams.get('year'))
                 Months._monthly_db.populate_defaulter(month=month,year=year,flats=requestData['flats'])
             except Exception as err:
+                traceback.print_exc()
                 print(err, type(err))
                 return {"message": "An error occurred populating defaulters"}, 500
             return {},200
@@ -80,9 +85,10 @@ class Months(Resource):
             try:
                 monthNumber=int(queryParams.get('month'))
                 month=Months._months[monthNumber-1]
-                year=queryParams.get('year')
+                year=int(queryParams.get('year'))
                 Months._monthly_db.delete_monthly_data(month=month,year=year)
             except Exception as err:
+                traceback.print_exc()
                 print(err, type(err))
                 return {"message": "An error occurred Creating Monthly Distribution"}, 500
             return {},200

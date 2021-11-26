@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse
 from db.ef import EmergencyFundFunctions
 from util.jwt_functions import authenticate
+import traceback
 
 class EmergencyFunds(Resource):
     _ef_db= EmergencyFundFunctions()
@@ -22,6 +23,7 @@ class EmergencyFunds(Resource):
                 result = EmergencyFunds._ef_db.ef_initialization()
                 return {"Created":"YES"}, 201
             except Exception as err:
+                traceback.print_exc()
                 print(err, type(err))
                 return {"message": "An error occurred creating EF."}, 500
         return create_ef()

@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse
 from db.members import MemeberFunctions
 from util.jwt_functions import authenticate
+import traceback
 
 class Members(Resource):
     _members_db= MemeberFunctions()
@@ -47,6 +48,7 @@ class Members(Resource):
                 Members._members_db.add_emails(**data)
                 return {},201
             except Exception as err:
+                traceback.print_exc()
                 print(err, type(err))
                 return {"message": "An error occurred Adding Emails"}, 500
         return add_emails()
@@ -59,6 +61,7 @@ class Members(Resource):
                 Members._members_db.update_password(**data)
                 return {},200
             except Exception as err:
+                traceback.print_exc()
                 print(err, type(err))
                 return {"message": "An error occurred updating password."}, 500
         return update_password()
@@ -71,6 +74,7 @@ class Members(Resource):
                 Members._members_db.toggle_admin_privilage(**data)
                 return {},200
             except Exception as err:
+                traceback.print_exc()
                 print(err, type(err))
                 return {"message": "An error occurred updating privilages."}, 500
         return toggle_admin()
