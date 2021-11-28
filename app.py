@@ -14,4 +14,4 @@ api.add_resource(user.Users, '/users')
 
 
 if __name__ == '__main__':
-    app.run(port=int(os.getenv('PORT')), debug=True)
+    app.run(port=int(os.getenv('PORT')), debug=False)
