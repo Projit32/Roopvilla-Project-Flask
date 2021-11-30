@@ -90,6 +90,6 @@ class Months(Resource):
             except Exception as err:
                 traceback.print_exc()
                 print(err, type(err))
-                return {"message": "An error occurred Creating Monthly Distribution"}, 500
+                return {"message": "An error occurred Deleting Monthly Distribution"}, 500
             return {},200
         return delete_monthly_data()

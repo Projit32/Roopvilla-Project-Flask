@@ -35,5 +35,5 @@ class EmergencyFunds(Resource):
             data= EmergencyFunds._ef_Parser.parse_args()
             EmergencyFunds._ef_db.ef_update_flat_rate(**data)
             return {"Updated": "YES"}, 200
-        return update_ef
+        return update_ef()
 
