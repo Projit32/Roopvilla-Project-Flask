@@ -7,6 +7,7 @@ class MonthlyFunctions:
     _ms_collection=MongoDBClient.monthly_stats
     _ef_collection=MongoDBClient.emergency_funds
     _ledger_collection=MongoDBClient.ledger_data
+    _electricity_collection=MongoDBClient.electricity_data
 
     def update_payment_status(self, month,year,flats=[]):
         if(flats):
@@ -153,7 +154,7 @@ class MonthlyFunctions:
         ledger_results= MonthlyFunctions._ledger_collection.delete_many({"MONTH": month, "YEAR": year})
         print("Items Deleted:", ledger_results.deleted_count)
     
-    def update_expenses(self,month,prev_month,year,prev_year,exp=[]):
+    def update_expenses(self,month,prev_month,year,prev_year,el_month,el_year,el_unit,el_amount,exp=[]):
         total_acc=sum([owner_data["TOTAL"] for owner_data in MonthlyFunctions._ms_collection.find_one({"MONTH": month, "YEAR": year})["MONTHLY_DIST"]["OWNERWISE_DIST"] if owner_data["PAYMENT_RECEIVED"]=="YES"])
         last_month_exp=list(MonthlyFunctions._ms_collection.find({"MONTH": prev_month, "YEAR": prev_year}))
         last_month_bal = last_month_exp[0]["MONTHLY_EXP"]["BALANCE"] if last_month_exp else 0
@@ -198,6 +199,16 @@ class MonthlyFunctions:
         
         result=MonthlyFunctions._ledger_collection.insert_many(ledger_list)
         print("Leger Insertion acknowledgement :",result.acknowledged)
+
+        result=MonthlyFunctions._electricity_collection.insert_one({
+            "BILLED_MON":el_month,
+            "BILLED_YR": el_year,
+            "PAID_MON":month,
+            "PAID_YR":year,
+            "AMOUNT":el_amount,
+            "UNITS": el_unit
+        })
+        
         
         monthly_exp={
             "TOTAL_INCOME":total_acc,

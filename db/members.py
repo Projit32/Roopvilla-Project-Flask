@@ -70,3 +70,47 @@ class MemeberFunctions:
         },upsert=True)
         print("Matched: ",result.matched_count)
         print("Modified: ",result.modified_count)
+    
+    def add_members(self ,name,emails=[], flats=[]):
+        result=MemeberFunctions._members_collection.insert_one({
+            "OWNER_NAME":name,
+            "QNT": len(flats),
+            "EMAILS":emails,
+            "FLT_NUMS": flats,
+            "ACCESS_KEY":"",
+            "TOKENS":[]
+        })
+        print("New Inserted Acknowledged : ",result.acknowledged)
+    
+    def remove_members(self ,email):
+        result=MemeberFunctions._members_collection.delete_one({
+            "EMAILS": email
+        })
+        print("Delete Acknowledged : ",result.acknowledged)
+    
+    def remove_flat_ownership(self,flat):
+        member=MemeberFunctions._members_collection.find_one({
+                 "FLT_NUMS": flat
+        })
+        if(member is not None):
+            flats= member['FLT_NUMS']
+        else:
+            raise Exception("Member Not found")
+        
+        flats.remove(flat)
+
+        result=MemeberFunctions._members_collection.update_one({"OWNER_NAME":member['OWNER_NAME']},{
+            "$set":{
+                 "FLT_NUMS": flats
+            }
+        })
+        print("Delete Acknowledged : ",result.acknowledged)
+    
+    def get_all_flats(self):
+        data=[]
+        for member in MemeberFunctions._members_collection.find({}):
+            data.extend(member["FLT_NUMS"])
+        
+        return data
+
+

@@ -39,7 +39,7 @@ class Months(Resource):
                 traceback.print_exc()
                 print(err, type(err))
                 return {"message": "An error occurred updating payments"}, 500
-            return {},200
+            return {},204
         return update_payments()
     
     def patch(self):
@@ -53,12 +53,13 @@ class Months(Resource):
                 prev=Months._months[monthNumber-2]
                 curr_year=int(queryParams.get('year'))
                 prev_year = curr_year-1 if monthNumber == 1 else curr_year
-                Months._monthly_db.update_expenses(month=month,prev_month=prev,year=curr_year,prev_year=prev_year,exp=requestData['expenditures'])
+                el_meter=requestData['electricity']
+                Months._monthly_db.update_expenses(month=month,prev_month=prev,year=curr_year,prev_year=prev_year,el_month=Months._months[el_meter['month']-1],el_year=el_meter['year'],el_amount=el_meter['amount'],el_unit=el_meter['units'],exp=requestData['expenditures'])
             except Exception as err:
                 traceback.print_exc()
                 print(err, type(err))
                 return {"message": "An error occurred updating expenses"}, 500
-            return {},200
+            return {},204
         return update_expenses()
     
     def options(self):
@@ -75,7 +76,7 @@ class Months(Resource):
                 traceback.print_exc()
                 print(err, type(err))
                 return {"message": "An error occurred populating defaulters"}, 500
-            return {},200
+            return {},204
         return populate_defaulter()
     
     def delete(self):
@@ -91,5 +92,5 @@ class Months(Resource):
                 traceback.print_exc()
                 print(err, type(err))
                 return {"message": "An error occurred Deleting Monthly Distribution"}, 500
-            return {},200
+            return {},204
         return delete_monthly_data()
