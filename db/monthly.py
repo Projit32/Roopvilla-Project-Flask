@@ -9,10 +9,11 @@ class MonthlyFunctions:
     _ledger_collection=MongoDBClient.ledger_data
     _electricity_collection=MongoDBClient.electricity_data
 
-    def update_payment_status(self, month,year,flats=[]):
+    def update_payment_status(self, month,year,flats=[], status="NO"):
+        print(status)
         if(flats):
             result=MonthlyFunctions._ms_collection.update_one(filter={"MONTH": month,"YEAR": year},
-                                            update={"$set": {"MONTHLY_DIST.OWNERWISE_DIST.$[flat].PAYMENT_RECEIVED" :"YES"}},
+                                            update={"$set": {"MONTHLY_DIST.OWNERWISE_DIST.$[flat].PAYMENT_RECEIVED" :status}},
                                             array_filters=[{"flat.FLATS": {"$in": flats}}],upsert=False)
             print("PAYMENT UPDATE - Matched :",result.matched_count)
             print("PAYMENT UPDATE - Modified :",result.modified_count)
@@ -153,6 +154,9 @@ class MonthlyFunctions:
 
         ledger_results= MonthlyFunctions._ledger_collection.delete_many({"MONTH": month, "YEAR": year})
         print("Items Deleted:", ledger_results.deleted_count)
+
+        electricity_results=MonthlyFunctions._electricity_collection.delete_one({"PAID_MON":month, "PAID_YR":year})
+        print("Item Deleted:", electricity_results.acknowledged)
     
     def update_expenses(self,month,prev_month,year,prev_year,el_month,el_year,el_unit,el_amount,exp=[]):
         total_acc=sum([owner_data["TOTAL"] for owner_data in MonthlyFunctions._ms_collection.find_one({"MONTH": month, "YEAR": year})["MONTHLY_DIST"]["OWNERWISE_DIST"] if owner_data["PAYMENT_RECEIVED"]=="YES"])

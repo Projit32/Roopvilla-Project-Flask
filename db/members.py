@@ -88,9 +88,9 @@ class MemeberFunctions:
         })
         print("Delete Acknowledged : ",result.acknowledged)
     
-    def remove_flat_ownership(self,flat):
+    def remove_flat_ownership(self,flat,email):
         member=MemeberFunctions._members_collection.find_one({
-                 "FLT_NUMS": flat
+                 "EMAILS": email
         })
         if(member is not None):
             flats= member['FLT_NUMS']
@@ -106,11 +106,13 @@ class MemeberFunctions:
         })
         print("Delete Acknowledged : ",result.acknowledged)
     
-    def get_all_flats(self):
+    def get_all_members(self):
         data=[]
         for member in MemeberFunctions._members_collection.find({}):
-            data.extend(member["FLT_NUMS"])
-        
+            data.append({
+                "name":member["OWNER_NAME"],
+                "emails":member["EMAILS"],
+                "flat":member["FLT_NUMS"]})
         return data
 
 

@@ -1,7 +1,6 @@
 bcrypt
 dnspython
 Flask
-Flask-RESTful
 Flask-Session
 pycparser
 PyJWT
