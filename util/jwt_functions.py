@@ -3,7 +3,7 @@ import jwt
 import datetime
 import functools
 import json
-from flask import request
+from flask import request, session
 from db.members import MemeberFunctions
 
 
@@ -24,6 +24,8 @@ def authenticate(func):
     @functools.wraps(func)
     def decodeToken(*args, **kwargs):
         try:
+            print("SESSION TOKEN",session['token'])
+            #implement this 
             token = request.headers['Authorization'].replace('Bearer ', '')
             decode =jwt.decode(token, os.getenv('JWT_SECRET'), algorithms=["HS256"])
             return func(*args, **kwargs)

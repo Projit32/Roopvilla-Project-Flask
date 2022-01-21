@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}
+Login - Roopvilla Project
+{% endblock %}
+
+{% block stylesheets %}
+<link href="static/css/signin.css" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    
+    <main class="form-signin text-center">
+      <form id="loginForm">
+        <img class="mb-4" src="static/login_logo.png" alt="logo" width="300">
+        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+        <div class="alert alert-danger" id="invalidCred" role="alert">
+          Username or Password is incorrect!
+        </div>
+        <div class="form-floating">
+          <input type="email" class="form-control bg-dark text-light" id="floatingInput" placeholder="name@example.com" name="email">
+          <label for="floatingInput">Email address</label>
+        </div>
+        <div class="form-floating">
+          <input type="password" class="form-control bg-dark text-light" id="floatingPassword" placeholder="Password" name="password">
+          <label for="floatingPassword">Password</label>
+        </div>
+    
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+      </form>
+      <br>
+      {% include 'footer.html' %}
+    </main>
+
+    <script>
+        $(function(){
+
+          $("#invalidCred").hide();
+
+            $("#loginForm").submit(function(event){
+                const data = $(this).serializeArray();
+                let reqData = {}
+                data.forEach((element)=>{
+                    reqData[element.name]=element.value;
+                });
+                const client = new XMLHttpRequest();
+                client.onload = function (){
+                    if (this.status == 201) {
+                        window.location="/home"
+                    }
+                    else if(this.status == 401)
+                    {
+                      $('#loginForm').trigger("reset");
+                      $('#invalidCred').show(250);
+                    }
+                    else{
+                      showError();
+                    }
+                }
+                client.open("POST", "/users/login",true);
+                client.setRequestHeader("Content-type","application/json");
+                client.send(JSON.stringify(reqData));
+                event.preventDefault();
+            });
+        });
+
+        function showError(message){
+          if(!message){ message ="Something went wrong. We'll check soon"}
+          $("#invalidCred").html(message);
+          $("#invalidCred").show(200);
+        }
+
+    </script>  
+    
+
+{% endblock %}

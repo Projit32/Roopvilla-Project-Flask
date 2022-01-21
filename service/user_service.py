@@ -1,4 +1,4 @@
-from flask import request, Blueprint
+from flask import request, Blueprint, session
 from db.members import MemeberFunctions
 from util.jwt_functions import generateToken,authenticate
 import traceback
@@ -12,7 +12,9 @@ def login():
     queryParams=request.args
     try:
         result=_members_db.find_flat_by_credentials(requestBody['email'], requestBody['password'])
-        return {"JWSToken": generateToken(result) }, 201
+        token=generateToken(result)
+        session['token'] = token
+        return {"JWSToken":  token}, 201
     except Exception as err:
         traceback.print_exc()
         return {"error": str(err)},401
@@ -25,8 +27,8 @@ def logout():
             print(token)
             flat_number= _members_db.find_flat_by_token(token)
             _members_db.remove_all_token(flat_number)
+            session.pop('token',None)
             return '',204
         except Exception as err:
             traceback.print_exc()
             return {"error": str(err)},500
-

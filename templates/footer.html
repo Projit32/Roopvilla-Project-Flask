@@ -1,0 +1,11 @@
+<footer class="container">
+    <p class="float-end"><a href="#">Back to top</a></p>
+    <p>&copy; <span id="footer_id">{YEAR}</span> Roopvilla Project</p>
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+</footer>
+
+<script>
+     $(function(){
+         $("#footer_id").html(new Date().getFullYear());
+        });
+</script>

@@ -1,14 +1,26 @@
-from flask import Flask
-from service import user_service,ef_service,member_service, monthly_service
+from flask import Flask, session
+from datetime import timedelta
+from flask_session import Session
+from pymongo import MongoClient
+from service import user_service, ef_service, member_service, monthly_service, frontend_service
 import os
 
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = os.getenv('SESSION_SECRET')
+app.config["SESSION_USE_SIGNER"] = True
+app.config["SESSION_PERMANENT"] = True
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=1)
+app.config["SESSION_TYPE"] = "mongodb"
+app.config["SESSION_MONGODB"] = MongoClient(os.getenv('MONGO_DB'),connect=False)
+app.config["SESSION_MONGODB_DB"] = "roopvilla_maintenance"
+Session(app)
 
 app.register_blueprint(ef_service.ef_apis)
 app.register_blueprint(user_service.user_apis)
 app.register_blueprint(member_service.member_apis)
 app.register_blueprint(monthly_service.monthly_apis)
+app.register_blueprint(frontend_service.frontend_pages)
 
 if __name__ == '__main__':
     app.run(port=int(os.getenv('PORT')), debug=False)
