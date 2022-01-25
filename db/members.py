@@ -59,6 +59,14 @@ class MemeberFunctions:
             return user['FLT_NUMS']
         else:
             raise Exception("Token Not found")
+    
+    def find_owner_by_token(self, token):
+        user=MemeberFunctions._members_collection.find_one({"ADM_TOKENS":token})
+        print("type",type(user), "value", user)
+        if(user is not None):
+            return user['OWNER_NAME']
+        else:
+            raise Exception("Token Not found")
 
     
     def add_token(self, flat, token):
@@ -78,7 +86,8 @@ class MemeberFunctions:
             "EMAILS":emails,
             "FLT_NUMS": flats,
             "ACCESS_KEY":"",
-            "TOKENS":[]
+            "TOKENS":[],
+            "ADMIN_ACCESS":False
         })
         print("New Inserted Acknowledged : ",result.acknowledged)
     
@@ -112,7 +121,8 @@ class MemeberFunctions:
             data.append({
                 "name":member["OWNER_NAME"],
                 "emails":member["EMAILS"],
-                "flat":member["FLT_NUMS"]})
+                "flat":member["FLT_NUMS"],
+                "is_admin":member['ADMIN_ACCESS']})
         return data
 
 

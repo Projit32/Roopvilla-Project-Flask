@@ -38,3 +38,13 @@ class EmergencyFundFunctions:
                 })
             print("EF UPDATE- Matched :",result.matched_count)
             print("EF UPDATE- Modified :",result.modified_count)
+    
+    def get_ef_details(self):
+        response=[]
+        for data in EmergencyFundFunctions._ef_collection.find({}):
+            item={
+                "flat":data['FLT_NUM'],
+                "rate":data['RATE']
+            }
+            response.append(item)
+        return response

@@ -14,7 +14,10 @@ def login():
         result=_members_db.find_flat_by_credentials(requestBody['email'], requestBody['password'])
         token=generateToken(result)
         session['token'] = token
-        return {"JWSToken":  token}, 201
+        if queryParams.get('token') == 'Y':
+            return {"JWSToken":  token}, 201
+        else:
+            return "",204
     except Exception as err:
         traceback.print_exc()
         return {"error": str(err)},401
@@ -23,11 +26,16 @@ def login():
 @authenticate
 def logout():
         try:
-            token = request.headers['Authorization'].replace('Bearer ', '')
-            print(token)
+            token = 'token'
+            if token in session.keys():
+                token = session['token']
+                print("From Session")
+            else:
+                token = request.headers['Authorization'].replace('Bearer ', '')
+                print("From Headers")
             flat_number= _members_db.find_flat_by_token(token)
             _members_db.remove_all_token(flat_number)
-            session.pop('token',None)
+            session.clear()
             return '',204
         except Exception as err:
             traceback.print_exc()

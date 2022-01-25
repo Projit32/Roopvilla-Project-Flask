@@ -1,0 +1,11 @@
+.white_border{
+  border-style: solid!important;
+  border-width: 1px!important;
+  border-color: white!important;
+}
+
+
+.bg-dark-green{
+  background-color:#55efc4;
+  background-image:linear-gradient(315deg, #55efc4 0%, #000000 74%);
+}

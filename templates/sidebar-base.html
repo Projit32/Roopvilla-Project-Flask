@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block stylesheets %}
+<link href="static/css/sidebars.css" rel="stylesheet">
+{% block morestyles %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+{% include 'svg-icons.html' %}
+
+<div class="d-flex text-white full-height" style="width: 100%;">
+
+  <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 15%;">
+    <div href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+      <span class="fs-4">Roopvilla Project</span>
+    </div>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li class="nav-item">
+        <a href="/home" class="nav-link text-white {% if path == 'home' %}active{% endif %}" {% if path == 'home' %}aria-current="page"{% endif %}>
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+          Home
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link text-white {% if path == 'dashboard' %}active{% endif %}" {% if path == 'dashboard' %}aria-current="page"{% endif %}>
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a href="/monthlyActions" class="nav-link text-white {% if path == 'monthlyActions' %}active{% endif %}" {% if path == 'monthlyActions' %}aria-current="page"{% endif %}>
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"/></svg>
+          Monthly Actions
+        </a>
+      </li>
+      <li>
+        <a href="/emergencyFunds" class="nav-link text-white {% if path == 'emergencyFunds' %}active{% endif %}" {% if path == 'emergencyFunds' %}aria-current="page"{% endif %}>
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#grid"/></svg>
+          Emergency Funds
+        </a>
+      </li>
+      <li>
+        <a href="/memberDetails" class="nav-link text-white {% if path == 'memberDetails' %}active{% endif %}" {% if path == 'memberDetails' %}aria-current="page"{% endif %}>
+          <svg class="bi me-2" width="16" height="16"><use xlink:href="#people-circle"/></svg>
+          Members Details
+        </a>
+      </li>
+    </ul>
+
+    {% include 'footer.html' %}
+    <hr>
+    <div class="dropdown">
+      <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+        <img src="static/user.png" alt="ADM" width="32" height="32" class="rounded-circle me-2">
+        <strong>{{ name }}</strong>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+        <li><a class="dropdown-item" href="#">New project...</a></li>
+        <li><a class="dropdown-item" href="#">Settings</a></li>
+        <li><a class="dropdown-item" href="#">Profile</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><button class="dropdown-item" id="logout" >Sign out</button></li>
+      </ul>
+    </div>
+  </div>
+
+  
+  <div style="width: 85%;" class="d-flex flex-column flex-shrink-0 p-3 text-white">
+    {% block panel %}{% endblock %}
+  </div>
+</div>
+
+<script src="static/js/sidebars.js"></script>
+{% block morescripts %}{% endblock %}
+{% include 'scripts.html' %}
+{% endblock %}

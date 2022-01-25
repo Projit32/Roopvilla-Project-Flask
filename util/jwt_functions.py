@@ -5,7 +5,10 @@ import functools
 import json
 from flask import request, session
 from db.members import MemeberFunctions
+from werkzeug.datastructures import ImmutableMultiDict
+from db.members import MemeberFunctions
 
+_members_db= MemeberFunctions()
 
 def generateToken(flatNumber):
     payload = {
@@ -24,10 +27,17 @@ def authenticate(func):
     @functools.wraps(func)
     def decodeToken(*args, **kwargs):
         try:
-            print("SESSION TOKEN",session['token'])
-            #implement this 
-            token = request.headers['Authorization'].replace('Bearer ', '')
+            token = 'token'
+            if token in session.keys():
+                token = session['token']
+                print("From Session")
+            else:
+                token = request.headers['Authorization'].replace('Bearer ', '')
+                print("From Headers")
             decode =jwt.decode(token, os.getenv('JWT_SECRET'), algorithms=["HS256"])
+            http_args = request.args.to_dict()
+            http_args ['ADM_NAME'] = _members_db.find_owner_by_token(token)
+            request.args = ImmutableMultiDict(http_args)
             return func(*args, **kwargs)
         except jwt.ExpiredSignatureError:
             return {"error":"Token Expired"}, 401

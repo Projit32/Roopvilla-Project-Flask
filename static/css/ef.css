@@ -1,0 +1,19 @@
+.transparent{
+background-color: #00000000;
+}
+
+.dark{
+  color: white!important;
+  --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-dark-rgb),var(--bs-bg-opacity))!important;
+    
+}
+
+.white_border{
+  border-color: white!important;
+}
+
+.bg-dark-green{
+  background-color:#55efc4;
+  background-image:linear-gradient(315deg, #55efc4 0%, #000000 74%);
+}

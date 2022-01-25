@@ -1,0 +1,70 @@
+{% extends "sidebar-base.html" %}
+
+{% block title %}
+Emergency Funds - Roopvilla Project
+{% endblock %}
+
+{% block morestyles %}
+<link href="static/css/ef.css" rel="stylesheet">
+{% endblock %}
+
+{% block panel %}
+<div>
+<div class="p-3 mb-4 bg-light rounded-3 bg-dark-green">
+    <div class="container-fluid py-3 ">
+      <h1 class="display-6 fw-bold">Reset Emergency Funds</h1>
+      <p class="col-md-9 fs-6">This will set all emergency fund's factor to 0 for all the flats if emergency fund's collection is already exists. 
+          Else, it will create one from grounds with everyone's rates set to 0.<br>Proceed with caution⚠️</p>
+      <button class="btn btn-primary btn-lg" type="button" id="createEF">Create or Reset</button><br><br>
+      <div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="EFCerrorMessage">
+          <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+          Something Went Wrong!
+        </div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="EFCsuccessMessage">
+          <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+          Rate Updated Successfully!
+        </div>
+      </div>
+    </div>
+</div>
+
+<div>
+    <div class="card text-white bg-dark ">
+        <div class="card-body">
+          <h5 class="card-title">Update Rate</h5>
+          <p class="card-text">Update the rate of the emergency fund at the falt level granularity.</p>
+        </div>
+        <ul class="list-group list-group-flush" >
+          <li class="list-group-item dark">
+            <select id='flatRates' class="form-select form-select-sm" onchange="checkRates(this.value);">
+          </select>
+          </li>
+          <li class="list-group-item dark" >
+            <div id="rateDetails">
+              
+            </div>
+          </li>
+        </ul>
+        <div class="card-body">
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="EFUerrorMessage">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+            Something Went Wrong!
+          </div>
+          <div class="alert alert-success alert-dismissible fade show" role="alert" id="EFUsuccessMessage">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+            Rate Updated Successfully!
+          </div>
+          <div class="alert alert-warning alert-dismissible fade show" role="alert" id="EFUalertMessage">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+            Rate is missing!
+          </div>
+      </div>
+</div>
+</div>
+{% endblock %}
+
+
+{% block morescripts %}
+<script src="static/js/ef.js"></script>
+{% endblock %}

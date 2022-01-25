@@ -28,3 +28,14 @@ def update_ef():
         traceback.print_exc()
         print(err, type(err))
         return {"message": "An error occurred updating EF."}, 500
+
+@ef_apis.route('/emergencyFunds/getFlatRates', methods=['GET'])
+@authenticate
+def get_ef_rates():
+    try:
+        data=_ef_db.get_ef_details()
+        return {"data": data}, 200
+    except Exception as err:
+        traceback.print_exc()
+        print(err, type(err))
+        return {"message": "An error occurred getting EF."}, 500

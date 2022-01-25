@@ -18,11 +18,11 @@ Login - Roopvilla Project
           Username or Password is incorrect!
         </div>
         <div class="form-floating">
-          <input type="email" class="form-control bg-dark text-light" id="floatingInput" placeholder="name@example.com" name="email">
+          <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email">
           <label for="floatingInput">Email address</label>
         </div>
         <div class="form-floating">
-          <input type="password" class="form-control bg-dark text-light" id="floatingPassword" placeholder="Password" name="password">
+          <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
           <label for="floatingPassword">Password</label>
         </div>
     
@@ -45,7 +45,7 @@ Login - Roopvilla Project
                 });
                 const client = new XMLHttpRequest();
                 client.onload = function (){
-                    if (this.status == 201) {
+                    if (this.status == 204) {
                         window.location="/home"
                     }
                     else if(this.status == 401)
@@ -70,7 +70,7 @@ Login - Roopvilla Project
           $("#invalidCred").show(200);
         }
 
-    </script>  
+    </script>
     
 
 {% endblock %}

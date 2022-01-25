@@ -63,7 +63,6 @@ def remove_member():
     try:
         data = request.get_json()
         complete_removal=request.args.get('complete') == 'Y'
-        print("complete removal",complete_removal, type(complete_removal))
         if(complete_removal):
             _members_db.remove_members(email=data['email'])
         else:

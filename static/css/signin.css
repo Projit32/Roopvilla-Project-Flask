@@ -38,3 +38,9 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+input{
+  color: rgba(var(--bs-light-rgb),var(--bs-text-opacity))!important;
+  background-color: rgba(var(--bs-dark-rgb),0.4)!important;
+}
+

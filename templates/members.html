@@ -1,0 +1,123 @@
+{% extends "sidebar-base.html" %}
+
+{% block title %}
+Members - Roopvilla Project
+{% endblock %}
+
+{% block morestyles %}
+<link href="static/css/members.css" rel="stylesheet">
+{% endblock %}
+
+{% block panel %}
+
+<div class="p-3 mb-4 bg-light rounded-3 bg-dark-green">
+  <div class="container-fluid py-3 ">
+    <h3 class="display-7 fw-bold">Member Onboarding</h3>
+    <form id="createMember">
+    <div class="my-2">
+      <div class="input-group mb-3">
+        <input type="text" class="form-control form-select-sm" placeholder="Owner Name" name='name'>
+        <span class="input-group-text">Owning</span>
+        <input type="text" class="form-control form-select-sm" placeholder="Flats" name='flats'>
+      </div>
+      <div class="input-group my-3">
+        <span class="input-group-text" id="newEmailstext">@</span>
+        <input type="text" class="form-control" placeholder="someone@example.com,anotherone@example.com" aria-describedby="newEmailstext" name='emails'>
+        <button class="btn btn-primary" type="submit">Add member</button>
+      </div>
+    </div>
+  </form>
+  </div>
+</div>
+
+<div class="card bg-dark p-3">
+  <div class="card-header ">
+    <h3 class="display-7 fw-bold">Member Update</h3>
+    Select Member to update properties:
+    <select id='memberSelect' class="form-select form-select-sm" onchange="updateMemberDetails(this.value);">
+    </select>
+  </div>
+  <div class="card-body">
+    <div class="accordion accordion-flush" id="accordionFlushExample">
+      <div class="accordion-item bg-dark text-white">
+        <h2 class="accordion-header" id="flush-headingOne">
+          <button class="accordion-button collapsed bg-dark text-white white_border" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+            Set Emails
+          </button>
+        </h2>
+        <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+          <br>
+          Current Emails:
+          <ul id="currentEmails"> 
+            
+          </ul>
+          Change Emails:
+          <div class="input-group my-3">
+            <span class="input-group-text" id="newEmailstext">@</span>
+            <input type="text" class="form-control" placeholder="someone@example.com,anotherone@example.com" aria-describedby="newEmailstext" id="newEmails">
+            <button class="btn btn-primary" onclick="setEmails();">Save Change</button>
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item bg-dark text-white">
+        <h2 class="accordion-header" id="flush-headingTwo">
+          <button class="accordion-button collapsed bg-dark text-white white_border" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+            Update Password
+          </button>
+        </h2>
+        <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample"> 
+          <div class="input-group my-3">
+            <span class="input-group-text" id="newPasswordtext">Set New Password</span>
+            <input type="password" class="form-control" placeholder="Password" aria-describedby="newPasswordtext" id="newPassword">
+            <button class="btn btn-primary" onclick="updatePassword();">Save Change</button>
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item bg-dark text-white">
+        <h2 class="accordion-header" id="flush-headingThree">
+          <button class="accordion-button collapsed bg-dark text-white white_border" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+            Update Admin Privilages
+          </button>
+        </h2>
+        <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
+          <div class="form-check form-switch my-2">
+            <input class="form-check-input" type="checkbox" role="switch" id="newPrivilage">
+            <label class="form-check-label" for="flexSwitchCheckDefault">Grant/Deny Admin Privilage Status. <b>Proceed with caution⚠️</b></label>
+          </div>
+          <button class="btn btn-primary my-2" onclick="setAdminPrivilage();">Save Change</button>
+        </div>
+      </div>
+      <div class="accordion-item bg-dark text-white">
+        <h2 class="accordion-header" id="flush-heading4">
+          <button class="accordion-button collapsed bg-dark text-white white_border" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse4" aria-expanded="false" aria-controls="flush-collapse4">
+            Delete member/Revoke ownership
+          </button>
+        </h2>
+        <div id="flush-collapse4" class="accordion-collapse collapse" aria-labelledby="flush-heading4" data-bs-parent="#accordionFlushExample">
+          <div class="form-check form-switch my-3">
+            <input class="form-check-input" type="checkbox" role="switch" id="removeMember"  onclick='completeRemoveClick(this.checked);'>
+            <label class="form-check-label" for="flexSwitchCheckDefault">Remove Member Completely</label>
+          </div>
+          Revoke Ownership of flat:
+          <select id='removeFlat' class="form-select form-select-sm">
+          </select>
+          <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert" id="removalAlert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+            You're about to remove this member completely, please review / reconsider before proceeding ‼
+          </div>
+          <button class="btn btn-primary my-3" onclick="removeOrRevokeMember();">Save Change</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer text-muted" id="status">
+    <span id="statusMessage"></span>
+    <span id="updateTime"></span>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block morescripts %}
+<script src="static/js/members.js"></script>
+{% endblock %}
