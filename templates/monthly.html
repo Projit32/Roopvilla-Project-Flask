@@ -1,1 +1,355 @@
 {% extends "sidebar-base.html" %}
+
+{% block title %}
+Monthly Actions - Roopvilla Project
+{% endblock %}
+
+{% block morestyles %}
+<link href="static/css/monthly.css" rel="stylesheet">
+{% endblock %}
+
+{% block panel %}
+
+<div class="p-2 mb-2 rounded-3 bg-div">
+  <div class="container-fluid py-1 center-text">
+    <h3 class="display-7 fw-bold">Monthly Actions</h3>
+    <div class="my-2">
+      <div class="input-group mb-3">
+        <span class="input-group-text">Year:</span>
+        <select class="form-select" id="mainYear" onchange="updateYearlyDetails(this.value);">
+        </select>
+        <span class="input-group-text">Month:</span>
+        <select class="form-select" id="mainMonth" onchange="updateMonthlyDetails(this.value);">
+        </select>
+      </div>
+    </div>
+    <div class="full-width d-grid gap-1 d-md-block">
+        <button class="btn-hover color-1 px-2" onclick="createDistributionForm();">Create Distribution</button>
+        <button class="btn-hover color-3 px-2" onclick="updatePaymentsForm();">Update Payments</button>
+        <button class="btn-hover color-7 px-2" onclick="updateExpensesForm();">Update Expenses</button>
+        <button class="btn-hover color-9 px-2" onclick="setDefaultersForm();">Set Defaulters</button>
+        <button class="btn-hover color-10 px-2" onclick="deleteDistributionForm();">Delete Distribution</button>
+    </div>
+  </div>
+</div>
+<div>
+  <!--Create-->
+  <div class="selectable" id="createForm">
+    Under Development
+  </div>
+  <!--expenses-->
+  <div class="selectable" id="expensesForm">
+    <form id="setExpensesForm">
+      <div class="card bg-dark p-3">
+        <div class="card-header">
+          <h4 class="display-7 fw-bold" id="updateExpenseLabel"></h4>
+        </div>
+        <div class="card-body">
+          Electricity Bill Details:
+          <div class="input-group mb-3">
+            <input type="text" aria-label="Billed Year" class="form-control" placeholder="Billing year" name="bill_year" required>
+            <label class="input-group-text" for="expensesSelect">Billied Month</label>
+            <select class="form-select" id="expensesSelect" name="bill_month" required>
+            </select>
+            <span class="input-group-text">Amount ₹</span>
+            <input type="number" class="form-control" name="bill_amount" placeholder="Price" step="0.1" required>
+            <input type="number" class="form-control" name="bill_units" placeholder="Units" step="1" required>
+          </div>
+          Edit Monthly Expenses Details: (Added items will show up in below table)
+          <div class="input-group mb-1">
+            <input type="text"  class="form-control" placeholder="Item name">
+            <label class="input-group-text" for="expensesSelect">Item Category</label>
+            <select class="form-select">
+              <option selected>Choose...</option>
+              <option value="1">One</option>
+              <option value="2">Two</option>
+              <option value="3">Three</option>
+            </select>
+            <span class="input-group-text">Amount ₹</span>
+            <input type="number" class="form-control" placeholder="Price" step="1">
+            <button class="btn btn-primary" type="button">Add Item</button>
+          </div>
+        </div>
+        <div class="card-footer" id="status">
+          <button class="btn btn-primary" type="submit">Update</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <!--Payments-->
+  <div class="selectable" id="paymentsForm">
+    <form id="setPaymentsForm">
+      <div class="card bg-dark p-3">
+        <div class="card-header">
+          <h3 class="display-7 fw-bold">Set Payment Status</h3>
+        </div>
+        <div class="card-body">
+          <div id="paymentOptions" class="form-check form-switch">
+
+          </div>
+        </div>
+        <div class="card-footer" id="status">
+          <button class="btn btn-primary" type="submit">Update payment Statuses</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <!--Defaulters-->
+  <div class="selectable" id="defaultersForm">
+    <form id="changeDefaultersForm">
+      <div class="card bg-dark p-3">
+        <div class="card-header">
+          <h3 class="display-7 fw-bold">Change Defaulters</h3>
+        </div>
+        <div class="card-body">
+          <div id="defaultersOptions" class="form-check form-switch">
+
+          </div>
+        </div>
+        <div class="card-footer" id="status">
+          <button class="btn btn-primary" type="submit">Update Defaulters' Statuses</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <!--Defaulters-->
+  <div class="selectable" id="deleteForm">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+      <div id="removalWarning">
+      </div>
+      <button class="btn btn-danger my-2" onclick="deleteMonth();">Delete</button>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+
+  function createDistributionForm(){
+    disableMonth(true);
+    showOnly("#createForm");
+  }
+
+  function setDefaultersForm(){
+    disableMonth(false);
+    showOnly("#defaultersForm");
+  }
+
+  function updatePaymentsForm(){
+    disableMonth(false);
+    showOnly("#paymentsForm");
+  }
+
+  function deleteDistributionForm(){
+    disableMonth(false);
+    showOnly("#deleteForm");
+  }
+  function updateExpensesForm(){
+    disableMonth(false);
+    showOnly("#expensesForm");
+  }
+
+  function disableMonth(set_disable){
+    $("#mainMonth").prop('disabled', set_disable);
+  }
+
+  function deleteMonth(){
+    let url = `/months?year=${parseInt(selectedYear)}&month=${monthsList.indexOf(selectedMonth)+1}`;
+    selectedMonth=undefined;
+    selectedYear=undefined;
+    APICall("DELETE", url ,undefined, undefined, true);
+  }
+
+  function APICall(method, url, data, callback, refreshData){
+    console.log("API Call for :",method,url,data);
+    const successCodes=[200,201,204];
+    const client = new XMLHttpRequest();
+    client.onload = function (){
+        if (successCodes.includes(this.status)) {
+          //TODO
+          console.log("success");
+          if(callback){
+            callback(JSON.parse(this.responseText));
+          }
+          if(refreshData){fetchMonthlyData();}
+        }
+        else{
+          //TODO
+          console.log("failed");
+        }
+    }
+    client.open(method,url,true);
+    if(data){
+      client.setRequestHeader("Content-type","application/json");
+      client.send(JSON.stringify(data));
+    }
+    else{
+      client.send();
+    }
+    
+  }
+
+  function showOnly(id){
+    $(".selectable").hide();
+    $(id).show(500);
+  }
+
+  function updateYearlyDetails(value){
+    selectedYear=value;
+    let months=monthlyMap.get(parseInt(value));
+    let target=$('#mainMonth').html("");
+    months.forEach(element=>{
+      const template = `
+      <option value="${element}">${element}</option>`;
+      target.append(template);
+    });
+    if(selectedMonth && months.includes(selectedMonth)){
+      $("#mainMonth").val(selectedMonth).change();
+    }
+    else{
+      $("#mainMonth").val(months[0]).change();
+    }
+    
+  }
+
+  function updateMonthlyDetails(value){
+    selectedMonth=value;
+
+    //expense Monthly Data
+    $("#updateExpenseLabel").html(`Update Expenses for ${selectedMonth} of ${selectedYear}`);
+
+    //Delete monthly data
+    $("#removalWarning").html(`You are about to delete the month <b>${selectedMonth}</b> of year <b>${selectedYear}</b>`);
+
+    //Defaulters Data
+    APICall("GET", `/months/defaulterStatus?year=${parseInt(selectedYear)}&month=${monthsList.indexOf(selectedMonth)+1}`, undefined, function(data){
+      let target=$("#defaultersOptions").html("");
+      data['data'].forEach(element=>{
+        let template=`<b>${element.flat}</b> <input class="form-check-input" type="checkbox" role="switch" name="${element.flat}" ${element.defaulter? "checked": ""}><br>`;
+        target.append(template);
+      });
+    });
+
+    //Payment Data
+    APICall("GET", `/months/paymentStatus?year=${parseInt(selectedYear)}&month=${monthsList.indexOf(selectedMonth)+1}`, undefined, function(data){
+      let target=$("#paymentOptions").html("");
+      data['data'].forEach(element=>{
+        let template=`<b>${element.flat}</b> <input class="form-check-input" type="checkbox" role="switch" name="${element.flat}" ${element.payment === "YES"? "checked": ""}><br>`;
+        target.append(template);
+      });
+    });
+  }
+
+  const monthsList=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  let selectedYear=0;
+  let selectedMonth=0;
+  let monthlyMap= new Map()
+
+  function fetchMonthlyData(){
+    console.log("Fetched Data")
+    APICall("GET", "/months", undefined, function(data){
+      let target=$('#mainYear').html("");
+          data['data'].forEach(element => {
+            monthlyMap.set(element.year, element.months);
+            const template = `
+            <option value="${element.year}">${element.year}</option>`;
+            target.append(template);
+          });
+          if(selectedYear){
+            console.log(selectedYear);
+            $("#mainYear").val(selectedYear).change();
+          }
+          else{
+            $("#mainYear").val(data['data'][0].year).change();
+          }
+    }, false);
+  }
+
+  $(function(){
+    fetchMonthlyData();
+    $(".selectable").hide();
+
+    for(let i =0 ;i<monthsList.length;i++)
+    {
+      let template=`<option value="${i}">${monthsList[i]}</option>`;
+      $("#expensesSelect").append(template);
+    }
+    
+
+    //update expenses form submit
+    $("#setExpensesForm").submit(function(event){
+      event.preventDefault();
+      const data = $(this).serializeArray();
+      let formData = {}
+      data.forEach((element)=>{
+          formData[element.name]=element.value;
+      });
+      console.log(formData);
+    });
+
+    //change payment status form submit
+    $("#setPaymentsForm").submit(function(event){
+      event.preventDefault();
+      let checks = $('input[type="checkbox"]', this);
+      let paid=[];
+      let notPaid=[];
+      checks.get().forEach(check=>{
+        if(check.checked){
+          paid.push(check.name);
+        }
+        else{
+          notPaid.push(check.name);
+        }
+      });
+
+      const reqData={
+        data:[
+          {
+            flats:paid,
+            status: "YES"
+          },
+          {
+            flats:notPaid,
+            status: "NO"
+          }
+        ]
+      }
+      APICall("PATCH", `/months/paymentStatus?year=${parseInt(selectedYear)}&month=${monthsList.indexOf(selectedMonth)+1}`,reqData, undefined, true );
+    });
+
+
+    //change defaulters status form submit
+    $("#changeDefaultersForm").submit(function(event){
+      event.preventDefault();
+      let checks = $('input[type="checkbox"]', this);
+      let defaulted=[];
+      let notDefaulted=[];
+      checks.get().forEach(check=>{
+        if(check.checked){
+          defaulted.push(check.name);
+        }
+        else{
+          notDefaulted.push(check.name);
+        }
+      });
+
+      const reqData={
+        data:[
+          {
+            flats:defaulted,
+            status: true
+          },
+          {
+            flats:notDefaulted,
+            status: false
+          }
+        ]
+      }
+      APICall("PUT", `/months/defaulterStatus?year=${parseInt(selectedYear)}&month=${monthsList.indexOf(selectedMonth)+1}`,reqData, undefined, true );
+    });
+  });
+</script>
+
+{% endblock %}

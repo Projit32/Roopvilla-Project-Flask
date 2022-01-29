@@ -13,9 +13,14 @@ def login_page():
 def home_page():
     return render_template('home.html',path="home",name=request.args.get("ADM_NAME"))
 
+@frontend_pages.route('/dashboard', methods=['GET'])
+@authenticate
+def dashboard_page():
+    return render_template('dashboard.html',path="dashboard",name=request.args.get("ADM_NAME"))
+
 @frontend_pages.route('/monthlyActions', methods=['GET'])
 #@authenticate
-def home_page():
+def monthly_page():
     return render_template('monthly.html',path="monthlyActions",name=request.args.get("ADM_NAME"))
 
 

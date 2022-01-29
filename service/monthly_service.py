@@ -8,7 +8,7 @@ _months=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"
 monthly_apis = Blueprint('monthly_apis', __name__)
 
 @monthly_apis.route('/months', methods=['POST'])
-@authenticate
+#@authenticate
 def create_monthly_dist():
     requestData=request.get_json()
     queryParams=request.args
@@ -26,14 +26,15 @@ def create_monthly_dist():
     return "",201
 
 @monthly_apis.route('/months/paymentStatus', methods=['PATCH'])
-@authenticate
+#@authenticate
 def update_payments():
     requestData=request.get_json()
     queryParams=request.args
     try:
         month=_months[int(queryParams.get('month'))-1]
         year=int(queryParams.get('year'))
-        _monthly_db.update_payment_status(month=month,year=year,flats=requestData['flats'],status=requestData['status'])
+        for items in requestData["data"]:
+            _monthly_db.update_payment_status(month=month,year=year,flats=items['flats'],status=items['status'])
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
@@ -41,7 +42,7 @@ def update_payments():
     return "",204
 
 @monthly_apis.route('/months/expenses', methods=['PUT'])
-@authenticate
+#@authenticate
 def update_expenses():
     requestData=request.get_json()
     queryParams=request.args
@@ -59,24 +60,40 @@ def update_expenses():
         return {"message": "An error occurred updating expenses"}, 500
     return "",204
 
-@monthly_apis.route('/months/defaulters', methods=['OPTIONS'])
-@authenticate
-def populate_defaulter():
+@monthly_apis.route('/months/defaulterStatus', methods=['PUT'])
+#@authenticate
+def set_defaulter():
     requestData=request.get_json()
     queryParams=request.args
     try:
         monthNumber=int(queryParams.get('month'))
         month=_months[monthNumber-1]
         year=int(queryParams.get('year'))
-        _monthly_db.populate_defaulter(month=month,year=year,flats=requestData['flats'])
+        for data in requestData['data']:
+            _monthly_db.set_defaulter_status(month=month,year=year,apply=data['status'],flats=data['flats'])
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
         return {"message": "An error occurred populating defaulters"}, 500
     return "",204
 
+@monthly_apis.route('/months/defaulterStatus', methods=['GET'])
+#@authenticate
+def get_defaulter():
+    queryParams=request.args
+    try:
+        monthNumber=int(queryParams.get('month'))
+        month=_months[monthNumber-1]
+        year=int(queryParams.get('year'))
+        data=_monthly_db.get_defaulter_status(month=month,year=year)
+        return {"data":data},200
+    except Exception as err:
+        traceback.print_exc()
+        print(err, type(err))
+        return {"message": "An error occurred fetching defaulters"}, 500
+
 @monthly_apis.route('/months', methods=['DELETE'])
-@authenticate
+#@authenticate
 def delete_monthly_data():
     queryParams=request.args
     try:
@@ -89,3 +106,29 @@ def delete_monthly_data():
         print(err, type(err))
         return {"message": "An error occurred Deleting Monthly Distribution"}, 500
     return "",204
+
+@monthly_apis.route('/months', methods=['GET'])
+#@authenticate
+def get_months_by_years():
+    try:
+        data=_monthly_db.get_unique_months_of_years()
+    except Exception as err:
+        traceback.print_exc()
+        print(err, type(err))
+        return {"message": "An error occurred Getting Months by Years"}, 500
+    return {"data":data},200
+
+@monthly_apis.route('/months/paymentStatus', methods=['GET'])
+#@authenticate
+def get_payments():
+    queryParams=request.args
+    try:
+        monthNumber=int(queryParams.get('month'))
+        month=_months[monthNumber-1]
+        year=int(queryParams.get('year'))
+        data=_monthly_db.get_payment_status(month=month,year=year)
+    except Exception as err:
+        traceback.print_exc()
+        print(err, type(err))
+        return {"message": "An error occurred Getting payments"}, 500
+    return {"data":data},200

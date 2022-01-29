@@ -18,7 +18,6 @@ def generateToken(flatNumber):
             }
     token=jwt.encode(payload, os.getenv('JWT_SECRET'), algorithm="HS256")
     MemeberFunctions().add_token(flat=flatNumber, token=token)
-    print(token)
     return token
 
 

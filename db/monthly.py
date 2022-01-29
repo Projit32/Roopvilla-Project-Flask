@@ -9,8 +9,34 @@ class MonthlyFunctions:
     _ledger_collection=MongoDBClient.ledger_data
     _electricity_collection=MongoDBClient.electricity_data
 
+    def get_unique_months_of_years(self):
+        years= MonthlyFunctions._ms_collection.find({}).distinct('YEAR')
+        data=[]
+        for year in years:
+            months=MonthlyFunctions._ms_collection.find({"YEAR": year}).distinct('MONTH')
+            data.append({
+                "year": year,
+                "months":months
+            })
+        return data
+    
+    def get_defaulter_status(self,month,year):
+        results=MonthlyFunctions._ms_collection.find_one({"MONTH": month,"YEAR": year})
+        data=[]
+        for flat in results["MONTHLY_DIST"]['FLATWISE_DIST']:
+            if not (flat["COMMENT"]=="UNSOLD" or flat["COMMENT"]=="NOT PAYING"):
+                data.append({"flat":flat['FLAT_NUM'], "defaulter":True if flat["COMMENT"]=="DEFAULTER" else False})
+        return data
+    
+    def get_payment_status(self,month,year):
+        data=MonthlyFunctions._ms_collection.find_one({"MONTH": month,"YEAR": year})
+        payment_status=[]
+        for owner in data["MONTHLY_DIST"]['OWNERWISE_DIST']:
+            for flat in owner['FLATS']:
+                payment_status.append({"flat":flat,"payment":owner["PAYMENT_RECEIVED"]})
+        return payment_status
+
     def update_payment_status(self, month,year,flats=[], status="NO"):
-        print(status)
         if(flats):
             result=MonthlyFunctions._ms_collection.update_one(filter={"MONTH": month,"YEAR": year},
                                             update={"$set": {"MONTHLY_DIST.OWNERWISE_DIST.$[flat].PAYMENT_RECEIVED" :status}},
@@ -31,7 +57,7 @@ class MonthlyFunctions:
             print("UNSOLD- Flatwise Modified :",result.modified_count)
             
         
-        if flats:
+        """if flats:
             owner_data={
                     "OWNER": "OMKARA DEV",
                     "FLATS": flats,
@@ -45,12 +71,12 @@ class MonthlyFunctions:
             result=MonthlyFunctions._ms_collection.update_one(filter={"MONTH": month,"YEAR": year},
                                             update={"$push": {"MONTHLY_DIST.OWNERWISE_DIST" :owner_data}})
             print("UNSOLD- Ownerwise Matched :",result.matched_count)
-            print("UNSOLD- Ownerwise Modified :",result.modified_count)
+            print("UNSOLD- Ownerwise Modified :",result.modified_count)"""
 
-    def populate_defaulter(self,month,year,flats=[]):
+    def set_defaulter_status(self,month,year,apply,flats=[]):
         if(flats):
             result=MonthlyFunctions._ms_collection.update_one(filter={"MONTH": month,"YEAR": year},
-                                    update={"$set": {"MONTHLY_DIST.FLATWISE_DIST.$[elem].AMOUNT" :0,"MONTHLY_DIST.FLATWISE_DIST.$[elem].COMMENT" :"DEFAULTER" }},
+                                    update={"$set": {"MONTHLY_DIST.FLATWISE_DIST.$[elem].COMMENT" :"DEFAULTER" if apply else ""}},
                                             array_filters=[{"elem.FLAT_NUM": {"$in":flats}}],upsert=False)
             print("Defaulter Matched :",result.matched_count)
             print("Defaulter Modified :",result.modified_count)
@@ -83,27 +109,25 @@ class MonthlyFunctions:
         member_dist =list()
         for owner in MonthlyFunctions._members_collection.find({}):
             ef_total =0
-            defaulter=False
+            paying_for=[]
             for flat in owner['FLT_NUMS']:
-                if(flat not in flats):
-                    defaulter=True
-                    continue
-                ef_total += MonthlyFunctions._ef_collection.find_one({"FLT_NUM":flat})['RND_OFF_AMNT']
-                print(owner['OWNER_NAME'], rate_amt*owner['QNT'], ef_total ,(rate_amt*owner['QNT'])+ef_total)
-            if(defaulter):
-                continue
-
-            owner_data={
+                if(flat in flats):
+                    paying_for.append(flat)
+                    ef_total += MonthlyFunctions._ef_collection.find_one({"FLT_NUM":flat})['RND_OFF_AMNT']
+                    print(owner['OWNER_NAME'], rate_amt*owner['QNT'], ef_total ,(rate_amt*owner['QNT'])+ef_total)
+            
+            if(paying_for):
+                owner_data={
                 "OWNER": owner['OWNER_NAME'],
-                "FLATS": owner['FLT_NUMS'],
+                "FLATS": paying_for,
                 "RATE": rate_amt,
                 "TOT_RATE": rate_amt*owner['QNT'],
                 "EMERGENCY_FUND": ef_total,
                 "TOTAL" : (rate_amt*owner['QNT'])+ef_total,
                 "PAYMENT_RECEIVED": "NO",
                 "COMMENTS":""
-            }
-            member_dist.append(owner_data)
+                }
+                member_dist.append(owner_data)
 
         #created Monthly structure
         result = MonthlyFunctions._ms_collection.insert_one({
@@ -131,11 +155,12 @@ class MonthlyFunctions:
             print("Idiot Flatwise Matched :",result.matched_count)
             print("Idiot Flatwise Modified :",result.modified_count)
             
-            #name finding 
+            """# name finding 
             name = MonthlyFunctions._members_collection.find_one({"FLT_NUMS":flat})["OWNER_NAME"]
+            # make a dict to match names
             owner_data={
                     "OWNER": name,
-                    "FLATS": flat,
+                    "FLATS": [flat],
                     "RATE": 0,
                     "TOT_RATE": 0,
                     "EMERGENCY_FUND": 0,
@@ -146,7 +171,7 @@ class MonthlyFunctions:
             result=MonthlyFunctions._ms_collection.update_one(filter={"MONTH": month,"YEAR": year},
                                             update={"$push": {"MONTHLY_DIST.OWNERWISE_DIST" :owner_data}})
             print("Idiot Ownerwise Matched :",result.matched_count)
-            print("Idiot Ownerwise Modified :",result.modified_count)
+            print("Idiot Ownerwise Modified :",result.modified_count)"""
 
     def delete_monthly_data(self, month, year):
         monthly_results = MonthlyFunctions._ms_collection.delete_one({"MONTH": month, "YEAR": year})
@@ -156,7 +181,7 @@ class MonthlyFunctions:
         print("Items Deleted:", ledger_results.deleted_count)
 
         electricity_results=MonthlyFunctions._electricity_collection.delete_one({"PAID_MON":month, "PAID_YR":year})
-        print("Item Deleted:", electricity_results.acknowledged)
+        print("Acknowledged:", electricity_results.acknowledged)
     
     def update_expenses(self,month,prev_month,year,prev_year,el_month,el_year,el_unit,el_amount,exp=[]):
         total_acc=sum([owner_data["TOTAL"] for owner_data in MonthlyFunctions._ms_collection.find_one({"MONTH": month, "YEAR": year})["MONTHLY_DIST"]["OWNERWISE_DIST"] if owner_data["PAYMENT_RECEIVED"]=="YES"])

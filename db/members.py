@@ -54,7 +54,6 @@ class MemeberFunctions:
     
     def find_flat_by_token(self, token):
         user=MemeberFunctions._members_collection.find_one({"ADM_TOKENS":token})
-        print("type",type(user), "value", user)
         if(user is not None):
             return user['FLT_NUMS']
         else:
@@ -62,7 +61,6 @@ class MemeberFunctions:
     
     def find_owner_by_token(self, token):
         user=MemeberFunctions._members_collection.find_one({"ADM_TOKENS":token})
-        print("type",type(user), "value", user)
         if(user is not None):
             return user['OWNER_NAME']
         else:

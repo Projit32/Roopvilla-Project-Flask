@@ -23,7 +23,7 @@
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white {% if path == 'dashboard' %}active{% endif %}" {% if path == 'dashboard' %}aria-current="page"{% endif %}>
+        <a href="/dashboard" class="nav-link text-white {% if path == 'dashboard' %}active{% endif %}" {% if path == 'dashboard' %}aria-current="page"{% endif %}>
           <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
           Dashboard
         </a>
@@ -56,9 +56,7 @@
         <strong>{{ name }}</strong>
       </a>
       <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-        <li><a class="dropdown-item" href="#">New project...</a></li>
-        <li><a class="dropdown-item" href="#">Settings</a></li>
-        <li><a class="dropdown-item" href="#">Profile</a></li>
+        <li><a class="dropdown-item" href="http://roopvilla-project.herokuapp.com/">Member Portal</a></li>
         <li><hr class="dropdown-divider"></li>
         <li><button class="dropdown-item" id="logout" >Sign out</button></li>
       </ul>

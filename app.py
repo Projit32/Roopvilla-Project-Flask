@@ -14,6 +14,7 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=1)
 app.config["SESSION_TYPE"] = "mongodb"
 app.config["SESSION_MONGODB"] = MongoClient(os.getenv('MONGO_DB'),connect=False)
 app.config["SESSION_MONGODB_DB"] = "roopvilla_maintenance"
+app.config["SESSION_MONGODB_COLLECT"] ="psessions"
 Session(app)
 
 app.register_blueprint(ef_service.ef_apis)
