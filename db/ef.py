@@ -3,7 +3,7 @@ import math
 
 class EmergencyFundFunctions:
     _flats =['Ground','1A','1B','2A','2B','3A','3B','4A','4B','5A','5B','6']
-    _total_area=[440,1460,940,1460,940,1628,772,1460,940,1460,940,460]
+    _total_area=[440,1460,940,1460,940,1628,772,1460,940,1460,940,475]
     _ef_collection=MongoDBClient.emergency_funds
     _alternate_round = lambda amount: (math.floor(amount) if(((amount*10.0)%10)<5) else math.ceil(amount))
 

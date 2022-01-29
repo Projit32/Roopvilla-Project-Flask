@@ -20,6 +20,9 @@ class MonthlyFunctions:
             })
         return data
     
+    def get_estimation_categories(self):
+        return MonthlyFunctions._ledger_collection.find({}).distinct("ITEM_CATEGORY")
+    
     def get_defaulter_status(self,month,year):
         results=MonthlyFunctions._ms_collection.find_one({"MONTH": month,"YEAR": year})
         data=[]

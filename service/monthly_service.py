@@ -132,3 +132,14 @@ def get_payments():
         print(err, type(err))
         return {"message": "An error occurred Getting payments"}, 500
     return {"data":data},200
+
+@monthly_apis.route('/months/estimationCategories', methods=['GET'])
+#@authenticate
+def get_estimation_categories():
+    try:
+        data=_monthly_db.get_estimation_categories()
+    except Exception as err:
+        traceback.print_exc()
+        print(err, type(err))
+        return {"message": "An error occurred Getting payments"}, 500
+    return {"data":data},200

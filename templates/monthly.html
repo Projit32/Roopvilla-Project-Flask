@@ -47,30 +47,31 @@ Monthly Actions - Roopvilla Project
         <div class="card-body">
           Electricity Bill Details:
           <div class="input-group mb-3">
-            <input type="text" aria-label="Billed Year" class="form-control" placeholder="Billing year" name="bill_year" required>
+            <span class="input-group-text">Billing Year</span>
+            <input type="text" aria-label="Billed Year" class="form-control" placeholder="2020" name="bill_year" required>
             <label class="input-group-text" for="expensesSelect">Billied Month</label>
             <select class="form-select" id="expensesSelect" name="bill_month" required>
             </select>
             <span class="input-group-text">Amount ₹</span>
-            <input type="number" class="form-control" name="bill_amount" placeholder="Price" step="0.1" required>
-            <input type="number" class="form-control" name="bill_units" placeholder="Units" step="1" required>
+            <input type="number" class="form-control" name="bill_amount" placeholder="100.0" step="0.1" required>
+            <span class="input-group-text">Units Billed</span>
+            <input type="number" class="form-control" name="bill_units" placeholder="100" step="1" required>
           </div>
           Edit Monthly Expenses Details: (Added items will show up in below table)
           <div class="input-group mb-1">
-            <input type="text"  class="form-control" placeholder="Item name">
+            <input type="text"  class="form-control" placeholder="Item name" id="expenseName">
             <label class="input-group-text" for="expensesSelect">Item Category</label>
-            <select class="form-select">
-              <option selected>Choose...</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
+            <select class="form-select" id="expenseCategory">
             </select>
             <span class="input-group-text">Amount ₹</span>
-            <input type="number" class="form-control" placeholder="Price" step="1">
-            <button class="btn btn-primary" type="button">Add Item</button>
+            <input type="number" class="form-control" placeholder="Price" step="1" id="expenseAmount">
+            <button class="btn btn-primary" type="button" onclick="AddEstimate();">Add Item</button>
           </div>
         </div>
         <div class="card-footer" id="status">
+          <div class="text-white" >
+            <ul id="expensesList"></ul>
+          </div>
           <button class="btn btn-primary" type="submit">Update</button>
         </div>
       </div>
@@ -112,7 +113,7 @@ Monthly Actions - Roopvilla Project
       </div>
     </form>
   </div>
-  <!--Defaulters-->
+  <!--Delete-->
   <div class="selectable" id="deleteForm">
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
       <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
@@ -160,6 +161,53 @@ Monthly Actions - Roopvilla Project
     selectedMonth=undefined;
     selectedYear=undefined;
     APICall("DELETE", url ,undefined, undefined, true);
+  }
+
+  let expenseMap = new Map();
+  function AddEstimate(){
+    const now = Date.now();
+    data={
+      name:$("#expenseName").val(),
+      category:$("#expenseCategory").find(":selected").text(),
+      amount:$("#expenseAmount").val()
+    }
+
+    expenseMap.set(now.toString(), data);
+    //reset
+    $("#expenseName").val("");
+    $('#expenseCategory').prop('selectedIndex',0)
+    $("#expenseAmount").val("");
+    displayTable();
+    console.log(expenseMap);
+  }
+
+  function editItem(id){
+    let data = expenseMap.get(id);
+    $("#expenseName").val(data.name);
+    $('#expenseCategory').val(data.category);
+    $("#expenseAmount").val(data.amount);
+    expenseMap.delete(id);
+    displayTable();
+  }
+
+  function deletItem(id){
+    expenseMap.delete(id);
+    console.log(expenseMap);
+    displayTable()
+  }
+
+  function displayTable(){
+    let target=$("#expensesList").html("");
+
+    expenseMap.forEach((value, key)=>{
+      const template = `<li>[${value.name} ---- ${value.category} ---- ₹${value.amount}  ] 
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-warning btn-sm" value=${key} onclick="editItem(this.value);">Edit</button>
+            <button type="button" class="btn btn-danger btn-sm" value=${key} onclick="deletItem(this.value);">Delete</button>
+          </div>
+        </li>`;
+      target.append(template);
+    });
   }
 
   function APICall(method, url, data, callback, refreshData){
@@ -279,6 +327,14 @@ Monthly Actions - Roopvilla Project
     
 
     //update expenses form submit
+    APICall("GET", `/months/estimationCategories`,undefined, function(data){
+      let target=$("#expenseCategory").html("");
+      data['data'].forEach(element=>{
+        let template=`<option value="${element}">${element}</option>`;
+        target.append(template);
+      });
+    }, false);
+
     $("#setExpensesForm").submit(function(event){
       event.preventDefault();
       const data = $(this).serializeArray();
