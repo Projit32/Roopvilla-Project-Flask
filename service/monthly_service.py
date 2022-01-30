@@ -22,7 +22,7 @@ def create_monthly_dist():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred Creating Monthly Distribution"}, 500
+        return {"error": "An error occurred Creating Monthly Distribution"}, 500
     return "",201
 
 @monthly_apis.route('/months/paymentStatus', methods=['PATCH'])
@@ -38,7 +38,7 @@ def update_payments():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred updating payments"}, 500
+        return {"error": "An error occurred updating payments"}, 500
     return "",204
 
 @monthly_apis.route('/months/expenses', methods=['PUT'])
@@ -57,7 +57,7 @@ def update_expenses():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred updating expenses"}, 500
+        return {"error": "An error occurred updating expenses"}, 500
     return "",204
 
 @monthly_apis.route('/months/defaulterStatus', methods=['PUT'])
@@ -74,7 +74,7 @@ def set_defaulter():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred populating defaulters"}, 500
+        return {"error": "An error occurred populating defaulters"}, 500
     return "",204
 
 @monthly_apis.route('/months/defaulterStatus', methods=['GET'])
@@ -90,7 +90,7 @@ def get_defaulter():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred fetching defaulters"}, 500
+        return {"error": "An error occurred fetching defaulters"}, 500
 
 @monthly_apis.route('/months', methods=['DELETE'])
 #@authenticate
@@ -104,7 +104,7 @@ def delete_monthly_data():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred Deleting Monthly Distribution"}, 500
+        return {"error": "An error occurred Deleting Monthly Distribution"}, 500
     return "",204
 
 @monthly_apis.route('/months', methods=['GET'])
@@ -115,7 +115,7 @@ def get_months_by_years():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred Getting Months by Years"}, 500
+        return {"error": "An error occurred Getting Months by Years"}, 500
     return {"data":data},200
 
 @monthly_apis.route('/months/paymentStatus', methods=['GET'])
@@ -130,7 +130,7 @@ def get_payments():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred Getting payments"}, 500
+        return {"error": "An error occurred Getting payments"}, 500
     return {"data":data},200
 
 @monthly_apis.route('/months/estimationCategories', methods=['GET'])
@@ -141,5 +141,5 @@ def get_estimation_categories():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred Getting payments"}, 500
+        return {"error": "An error occurred Getting payments"}, 500
     return {"data":data},200

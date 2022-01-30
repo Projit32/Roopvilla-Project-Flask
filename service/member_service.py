@@ -16,7 +16,7 @@ def set_emails():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred Adding Emails"}, 500
+        return {"error": "An error occurred Adding Emails"}, 500
 
 @member_apis.route('/members/changePassword', methods=['PATCH'])
 @authenticate
@@ -28,7 +28,7 @@ def update_password():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred updating password."}, 500
+        return {"error": "An error occurred updating password."}, 500
 
 @member_apis.route('/members/changeAdminPrivilages', methods=['OPTIONS'])
 @authenticate
@@ -42,7 +42,7 @@ def toggle_admin():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred updating privilages."}, 500
+        return {"error": "An error occurred updating privilages."}, 500
 
 @member_apis.route('/members', methods=['POST'])
 @authenticate
@@ -54,7 +54,7 @@ def add_member():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred adding member."}, 500
+        return {"error": "An error occurred adding member."}, 500
 
 
 @member_apis.route('/members', methods=['DELETE'])
@@ -72,7 +72,7 @@ def remove_member():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred removing member."}, 500
+        return {"error": "An error occurred removing member."}, 500
 
 
 @member_apis.route('/members', methods=['GET'])
@@ -84,5 +84,5 @@ def get_all_members():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"message": "An error occurred getting all flats."}, 500
+        return {"error": "An error occurred getting all flats."}, 500
 
