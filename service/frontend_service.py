@@ -19,10 +19,9 @@ def dashboard_page():
     return render_template('dashboard.html',path="dashboard",name=request.args.get("ADM_NAME"))
 
 @frontend_pages.route('/monthlyActions', methods=['GET'])
-#@authenticate
+@authenticate
 def monthly_page():
     return render_template('monthly.html',path="monthlyActions",name=request.args.get("ADM_NAME"))
-
 
 @frontend_pages.route('/emergencyFunds', methods=['GET'])
 @authenticate

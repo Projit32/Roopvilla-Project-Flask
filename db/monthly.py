@@ -206,6 +206,7 @@ class MonthlyFunctions:
             
         total_exp=0
         temp_acc=total_acc+last_month_bal
+        exp.append({"NAME": "Electricity Bill","CATEGORY": "VAR","COST" :el_amount})
         for item in exp:
             ledger_data={
                 "ITEM_NAME": item["NAME"],

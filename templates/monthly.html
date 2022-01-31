@@ -30,12 +30,59 @@ Monthly Actions - Roopvilla Project
         <button class="btn-hover color-9 px-2" onclick="setDefaultersForm();">Set Defaulters</button>
         <button class="btn-hover color-10 px-2" onclick="deleteDistributionForm();">Delete Distribution</button>
     </div>
+    <div class="m-auto-1 text-center" >
+      <span id="message">Hello there</span>
+    </div>
   </div>
 </div>
 <div>
   <!--Create-->
-  <div class="selectable" id="createForm">
-    Under Development
+  <div class="selectable bg-dark-green p-3 rounded-3" id="createForm">
+    <form id="createMonthlyForm">
+      <div class="row align-items-md-stretch mb-2">
+        <h2>Create Monthly Distribution</h2>
+        <div style="width: 25%;">
+          Paying Flats:
+          <div id="payersOptions" class="form-check form-switch">
+          </div>
+          <div class="input-group mb-3">
+            <span class="input-group-text">Unsold Flats</span>
+            <input type="text" class="form-control" placeholder="FlatA,FlatB" name="unsold">
+          </div>
+        </div>
+        <div  style="width: 75%;">
+          <div class="input-group mb-3" style="width: 40%;">
+            <span class="input-group-text">Month</span>
+            <select class="form-select" id="createMonthList" name='createDistMonth'>
+            </select>
+            <span class="input-group-text">Year</span>
+            <input type="number" class="form-control" placeholder="Year" step="1" name="createDistYear">
+          </div>
+          Added/Edit Monthly Estimates Details: 
+          <div class="input-group mb-1">
+            <input type="text"  class="form-control" placeholder="Item name" id="estimateName">
+            <span class="input-group-text">Amount ₹</span>
+            <input type="number" class="form-control" placeholder="Price" step="1" id="estimateAmount">
+            <button class="btn btn-primary" type="button" onclick="AddEstimate();">Add Item</button>
+          </div>
+          Added Estimates will show up in this table:
+          <table class="table table-dark table-striped table-sm">
+            <thead>
+              <tr>
+                <th scope="col">Item Name</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="estimateList">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" type="submit">Create Monthly Distribution</button>
+
+    </form>
   </div>
   <!--expenses-->
   <div class="selectable" id="expensesForm">
@@ -48,7 +95,7 @@ Monthly Actions - Roopvilla Project
           Electricity Bill Details:
           <div class="input-group mb-3">
             <span class="input-group-text">Billing Year</span>
-            <input type="text" aria-label="Billed Year" class="form-control" placeholder="2020" name="bill_year" required>
+            <input type="text" aria-label="Billed Year" class="form-control" placeholder="Year" name="bill_year" required>
             <label class="input-group-text" for="expensesSelect">Billied Month</label>
             <select class="form-select" id="expensesSelect" name="bill_month" required>
             </select>
@@ -65,7 +112,7 @@ Monthly Actions - Roopvilla Project
             </select>
             <span class="input-group-text">Amount ₹</span>
             <input type="number" class="form-control" placeholder="Price" step="1" id="expenseAmount">
-            <button class="btn btn-primary" type="button" onclick="AddEstimate();">Add Item</button>
+            <button class="btn btn-primary" type="button" onclick="AddExpense();">Add Item</button>
           </div>
         Added Expenses will show up in this table:
         <table class="table table-dark table-striped table-sm">
@@ -139,31 +186,32 @@ Monthly Actions - Roopvilla Project
 <script>
 
   function createDistributionForm(){
-    disableMonth(true);
+    disableMonthandYear(true);
     showOnly("#createForm");
   }
 
   function setDefaultersForm(){
-    disableMonth(false);
+    disableMonthandYear(false);
     showOnly("#defaultersForm");
   }
 
   function updatePaymentsForm(){
-    disableMonth(false);
+    disableMonthandYear(false);
     showOnly("#paymentsForm");
   }
 
   function deleteDistributionForm(){
-    disableMonth(false);
+    disableMonthandYear(false);
     showOnly("#deleteForm");
   }
   function updateExpensesForm(){
-    disableMonth(false);
+    disableMonthandYear(false);
     showOnly("#expensesForm");
   }
 
-  function disableMonth(set_disable){
+  function disableMonthandYear(set_disable){
     $("#mainMonth").prop('disabled', set_disable);
+    $("#mainYear").prop('disabled', set_disable);
   }
 
   function deleteMonth(){
@@ -172,9 +220,14 @@ Monthly Actions - Roopvilla Project
     selectedYear=undefined;
     APICall("DELETE", url ,undefined, undefined, true);
   }
-
+  /**
+   * 
+   * Expenses
+   * 
+   * 
+  * */
   let expenseMap = new Map();
-  function AddEstimate(){
+  function AddExpense(){
     if(!$("#expenseName").val() || !$("#expenseAmount").val){
       return;
     }
@@ -190,25 +243,24 @@ Monthly Actions - Roopvilla Project
     $("#expenseName").val("");
     $('#expenseCategory').prop('selectedIndex',0)
     $("#expenseAmount").val("");
-    displayTable();
+    displayExpensesTable();
   }
 
-  function editItem(id){
+  function editExpense(id){
     let data = expenseMap.get(id);
     $("#expenseName").val(data.name);
     $('#expenseCategory').val(data.category);
     $("#expenseAmount").val(data.amount);
     expenseMap.delete(id);
-    displayTable();
+    displayExpensesTable();
   }
 
-  function deletItem(id){
+  function deletExpense(id){
     expenseMap.delete(id);
-    console.log(expenseMap);
-    displayTable()
+    displayExpensesTable()
   }
 
-  function displayTable(){
+  function displayExpensesTable(){
     let target=$("#expensesList").html("");
 
     expenseMap.forEach((value, key)=>{
@@ -218,12 +270,76 @@ Monthly Actions - Roopvilla Project
       <td>₹${value.amount}</td>
       <td>
         <div class="btn-group" role="group" aria-label="Basic example">
-            <button type="button" class="btn btn-warning btn-sm" value=${key} onclick="editItem(this.value);">
+            <button type="button" class="btn btn-warning btn-sm" value=${key} onclick="editExpense(this.value);">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
                 <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
               </svg>
             </button>
-            <button type="button" class="btn btn-danger btn-sm" value=${key} onclick="deletItem(this.value);">
+            <button type="button" class="btn btn-danger btn-sm" value=${key} onclick="deletExpense(this.value);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+              </svg>
+            </button>
+        </div>
+      </td>
+      </tr>
+      `;
+      target.append(template);
+    });
+  }
+  /**
+   * 
+   * Estimates
+   * 
+   * 
+  * */
+  let estimateMap = new Map();
+  function AddEstimate(){
+    if(!$("#estimateName").val() || !$("#estimateAmount").val){
+      return;
+    }
+    const now = Date.now();
+    data={
+      name:$("#estimateName").val(),
+      amount:$("#estimateAmount").val()
+    }
+
+    estimateMap.set(now.toString(), data);
+    //reset
+    $("#estimateName").val("");
+    $("#estimateAmount").val("");
+    displayEstimateTable();
+  }
+
+  function editEstimate(id){
+    let data = estimateMap.get(id);
+    $("#estimateName").val(data.name);
+    $("#estimateAmount").val(data.amount);
+    estimateMap.delete(id);
+    displayEstimateTable();
+  }
+
+  function deletEstimate(id){
+    estimateMap.delete(id);
+    displayEstimateTable()
+  }
+
+  function displayEstimateTable(){
+    let target=$("#estimateList").html("");
+
+    estimateMap.forEach((value, key)=>{
+      const template=`<tr>
+      <td>${value.name}</td>
+      <td>₹${value.amount}</td>
+      <td>
+        <div class="btn-group" role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-warning btn-sm" value=${key} onclick="editEstimate(this.value);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+              </svg>
+            </button>
+            <button type="button" class="btn btn-danger btn-sm" value=${key} onclick="deletEstimate(this.value);">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                 <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
                 <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
@@ -238,27 +354,33 @@ Monthly Actions - Roopvilla Project
   }
 
   function APICall(method, url, data, callback, refreshData){
-    console.log("API Call for :",method,url,data);
+    showLoading()
     const successCodes=[200,201];
     const client = new XMLHttpRequest();
     client.onload = function (){
         if (successCodes.includes(this.status)) {
-          //TODO
-          console.log("success");
+          displayMssage(true,"Data Fetched and Populated!");
           if(callback){
             callback(JSON.parse(this.responseText));
           }
           if(refreshData){fetchMonthlyData();}
         }
         else if(this.status === 204){
+          displayMssage(true,undefined);
           if(callback){
             callback();
           }
           if(refreshData){fetchMonthlyData();}
         }
         else{
-          //TODO
-          console.log("failed");
+          try{
+            let response=JSON.parse(this.responseText)
+            console.log(response);
+            displayMssage(false,response.error);
+          }
+          catch(err){
+            displayMssage(false,undefined);
+          }
         }
     }
     client.open(method,url,true);
@@ -329,7 +451,6 @@ Monthly Actions - Roopvilla Project
   let monthlyMap= new Map()
 
   function fetchMonthlyData(){
-    console.log("Fetched Data")
     APICall("GET", "/months", undefined, function(data){
       let target=$('#mainYear').html("");
           data['data'].forEach(element => {
@@ -339,7 +460,6 @@ Monthly Actions - Roopvilla Project
             target.append(template);
           });
           if(selectedYear){
-            console.log(selectedYear);
             $("#mainYear").val(selectedYear).change();
           }
           else{
@@ -356,8 +476,62 @@ Monthly Actions - Roopvilla Project
     {
       let template=`<option value="${i+1}">${monthsList[i]}</option>`;
       $("#expensesSelect").append(template);
+      $("#createMonthList").append(template);
     }
     
+    //create distribution form submit
+    APICall("GET", `/members`,undefined, function(data){
+      let target=$("#payersOptions").html("");
+      data['data'].forEach(element=>{
+        element.flat.forEach(item=>{
+          let template=`<b>${item}</b> <input class="form-check-input" type="checkbox" role="switch" name="${item}"}><br>`;
+          target.append(template);
+        })
+      });
+    }, false);
+
+    $("#createMonthlyForm").submit(function(event){
+      event.preventDefault();
+      const data = $(this).serializeArray();
+      let formData = {}
+      data.forEach((element)=>{
+          formData[element.name]=element.value;
+      });
+
+      let checks = $('input[type="checkbox"]', this);
+      let paying=[];
+      let notPaying=[];
+      checks.get().forEach(check=>{
+        if(check.checked){
+          paying.push(check.name);
+        }
+        else{
+          notPaying.push(check.name);
+        }
+      });
+
+      if(paying.lentgh){
+        displayMssage(false,"Atleast 1 paying member should be present!");
+        return;
+      }
+
+      let estimates=[];
+      estimateMap.forEach((value,key)=>{
+        estimates.push({ITEM:value.name, Price:parseInt(value.amount)});
+      })
+
+      const requestData ={
+        estimates,
+        payingFlats: paying,
+        notPayingFlats: notPaying,
+        unsoldFlats:formData['unsold'].split(',')
+      }
+      APICall("POST", `/months?year=${parseInt(formData['createDistYear'])}&month=${parseInt(formData['createDistMonth'])}`,requestData, (data)=>{
+        estimateMap.clear();
+        this.reset();
+        displayEstimateTable();
+      }, true);
+    });
 
     //update expenses form submit
     APICall("GET", `/months/estimationCategories`,undefined, function(data){
@@ -376,8 +550,7 @@ Monthly Actions - Roopvilla Project
           formData[element.name]=element.value;
       });
       if(!expenseMap.size){
-        //Error Handler
-        console.log("No Expense Data Added");
+        displayMssage(false,"Atleast 1 expense should be added!");
         return;
       }
 
@@ -400,10 +573,10 @@ Monthly Actions - Roopvilla Project
         expenditures,
         electricity
       }
-      console.log(requestData);
       APICall("PUT", `/months/expenses?year=${parseInt(selectedYear)}&month=${monthsList.indexOf(selectedMonth)+1}`,requestData, (data)=>{
         expenseMap.clear();
         this.reset();
+        displayExpensesTable();
       }, false);
     });
 
@@ -467,7 +640,31 @@ Monthly Actions - Roopvilla Project
       }
       APICall("PUT", `/months/defaulterStatus?year=${parseInt(selectedYear)}&month=${monthsList.indexOf(selectedMonth)+1}`,reqData, undefined, true );
     });
+
+    $("#message").hide();
   });
+
+  function showLoading()
+  {
+    $("#message").css("color","white");
+    $("#message").html(`<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>Loading...`);
+    $("#message").fadeTo(100, 0.4);
+  }
+
+  function displayMssage(is_success,message){
+    if(is_success){
+      $("#message").html(`<b>${message? message : "Successfully Updated!"}</b><br>`);
+      $("#message").css("color","green");
+    }
+    else{
+      $("#message").html(`<b>${message? message : "Couldn't Update!"}</b><br>`);
+      $("#message").css("color","red");
+    }
+
+    $("#message").fadeTo(2000, 1).slideUp(1500, function() {
+      $("#message").hide();
+    });
+  }
 </script>
 
 {% endblock %}

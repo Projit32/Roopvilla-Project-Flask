@@ -1,8 +1,10 @@
 from db.client import MongoDBClient
+from db.ef import EmergencyFundFunctions
 import bcrypt
 
 class MemeberFunctions:
     _members_collection=MongoDBClient.members_details
+    _ef_db= EmergencyFundFunctions()
 
     def add_emails(self,flat,emails=[]):
         result=MemeberFunctions._members_collection.update_many({"FLT_NUMS": flat}, {
@@ -88,8 +90,19 @@ class MemeberFunctions:
             "ADMIN_ACCESS":False
         })
         print("New Inserted Acknowledged : ",result.acknowledged)
+        for flat in flats:
+            MemeberFunctions._ef_db.ef_update_flat_rate(flat_number=flat, rate=0.1)
     
     def remove_members(self ,email):
+        user=MemeberFunctions._members_collection.find_one({
+             "EMAILS": email
+        })
+        if(user is None):
+            raise Exception("User Not found")
+
+        for flat in user["FLT_NUMS"]:
+            MemeberFunctions._ef_db.ef_update_flat_rate(flat_number=flat, rate=0.0)
+
         result=MemeberFunctions._members_collection.delete_one({
             "EMAILS": email
         })
@@ -112,6 +125,7 @@ class MemeberFunctions:
             }
         })
         print("Delete Acknowledged : ",result.acknowledged)
+        MemeberFunctions._ef_db.ef_update_flat_rate(flat_number=flat, rate=0.0)
     
     def get_all_members(self):
         data=[]

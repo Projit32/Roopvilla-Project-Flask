@@ -8,7 +8,7 @@ _months=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"
 monthly_apis = Blueprint('monthly_apis', __name__)
 
 @monthly_apis.route('/months', methods=['POST'])
-#@authenticate
+@authenticate
 def create_monthly_dist():
     requestData=request.get_json()
     queryParams=request.args
@@ -23,10 +23,10 @@ def create_monthly_dist():
         traceback.print_exc()
         print(err, type(err))
         return {"error": "An error occurred Creating Monthly Distribution"}, 500
-    return "",201
+    return {},201
 
 @monthly_apis.route('/months/paymentStatus', methods=['PATCH'])
-#@authenticate
+@authenticate
 def update_payments():
     requestData=request.get_json()
     queryParams=request.args
@@ -42,7 +42,7 @@ def update_payments():
     return "",204
 
 @monthly_apis.route('/months/expenses', methods=['PUT'])
-#@authenticate
+@authenticate
 def update_expenses():
     requestData=request.get_json()
     queryParams=request.args
@@ -61,7 +61,7 @@ def update_expenses():
     return "",204
 
 @monthly_apis.route('/months/defaulterStatus', methods=['PUT'])
-#@authenticate
+@authenticate
 def set_defaulter():
     requestData=request.get_json()
     queryParams=request.args
@@ -78,7 +78,7 @@ def set_defaulter():
     return "",204
 
 @monthly_apis.route('/months/defaulterStatus', methods=['GET'])
-#@authenticate
+@authenticate
 def get_defaulter():
     queryParams=request.args
     try:
@@ -93,7 +93,7 @@ def get_defaulter():
         return {"error": "An error occurred fetching defaulters"}, 500
 
 @monthly_apis.route('/months', methods=['DELETE'])
-#@authenticate
+@authenticate
 def delete_monthly_data():
     queryParams=request.args
     try:
@@ -108,7 +108,7 @@ def delete_monthly_data():
     return "",204
 
 @monthly_apis.route('/months', methods=['GET'])
-#@authenticate
+@authenticate
 def get_months_by_years():
     try:
         data=_monthly_db.get_unique_months_of_years()
@@ -119,7 +119,7 @@ def get_months_by_years():
     return {"data":data},200
 
 @monthly_apis.route('/months/paymentStatus', methods=['GET'])
-#@authenticate
+@authenticate
 def get_payments():
     queryParams=request.args
     try:
@@ -134,7 +134,7 @@ def get_payments():
     return {"data":data},200
 
 @monthly_apis.route('/months/estimationCategories', methods=['GET'])
-#@authenticate
+@authenticate
 def get_estimation_categories():
     try:
         data=_monthly_db.get_estimation_categories()
