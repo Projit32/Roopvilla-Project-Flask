@@ -59,22 +59,6 @@ class MonthlyFunctions:
             print("UNSOLD- Flatwise Matched :",result.matched_count)
             print("UNSOLD- Flatwise Modified :",result.modified_count)
             
-        
-        """if flats:
-            owner_data={
-                    "OWNER": "OMKARA DEV",
-                    "FLATS": flats,
-                    "RATE": 0,
-                    "TOT_RATE": 0,
-                    "EMERGENCY_FUND": 0,
-                    "TOTAL" : 0,
-                    "PAYMENT_RECEIVED": "NA",
-                    "COMMENTS":""
-                }
-            result=MonthlyFunctions._ms_collection.update_one(filter={"MONTH": month,"YEAR": year},
-                                            update={"$push": {"MONTHLY_DIST.OWNERWISE_DIST" :owner_data}})
-            print("UNSOLD- Ownerwise Matched :",result.matched_count)
-            print("UNSOLD- Ownerwise Modified :",result.modified_count)"""
 
     def set_defaulter_status(self,month,year,apply,flats=[]):
         if(flats):
@@ -157,24 +141,7 @@ class MonthlyFunctions:
                                                 update={"$push": {"MONTHLY_DIST.FLATWISE_DIST" :flat_data}})
             print("Idiot Flatwise Matched :",result.matched_count)
             print("Idiot Flatwise Modified :",result.modified_count)
-            
-            """# name finding 
-            name = MonthlyFunctions._members_collection.find_one({"FLT_NUMS":flat})["OWNER_NAME"]
-            # make a dict to match names
-            owner_data={
-                    "OWNER": name,
-                    "FLATS": [flat],
-                    "RATE": 0,
-                    "TOT_RATE": 0,
-                    "EMERGENCY_FUND": 0,
-                    "TOTAL" : 0,
-                    "PAYMENT_RECEIVED": "NO",
-                    "COMMENTS":""
-                }
-            result=MonthlyFunctions._ms_collection.update_one(filter={"MONTH": month,"YEAR": year},
-                                            update={"$push": {"MONTHLY_DIST.OWNERWISE_DIST" :owner_data}})
-            print("Idiot Ownerwise Matched :",result.matched_count)
-            print("Idiot Ownerwise Modified :",result.modified_count)"""
+
 
     def delete_monthly_data(self, month, year):
         monthly_results = MonthlyFunctions._ms_collection.delete_one({"MONTH": month, "YEAR": year})
@@ -208,13 +175,17 @@ class MonthlyFunctions:
         temp_acc=total_acc+last_month_bal
         exp.append({"NAME": "Electricity Bill","CATEGORY": "VAR","COST" :el_amount})
         for item in exp:
+            cost=item['COST'] 
+            if item["CATEGORY"] == 'ACC':
+                item['COST']=-item['COST']
+
             ledger_data={
                 "ITEM_NAME": item["NAME"],
                 "ITEM_CATEGORY": item["CATEGORY"],
                 "MONTH": month,
                 "YEAR": year,
-                "CREDIT":0,
-                "DEBIT":item['COST'],
+                "CREDIT":cost if item["CATEGORY"] == 'ACC' else 0,
+                "DEBIT":0 if item["CATEGORY"] == 'ACC' else cost,
                 "BALANCE": temp_acc-item["COST"]
             }
             temp_acc -=item["COST"]
