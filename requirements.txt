@@ -4,5 +4,5 @@ Flask
 Flask-Session
 pycparser
 PyJWT
-pymongo
+pymongo==3.12.1
 uwsgi
