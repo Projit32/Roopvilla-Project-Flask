@@ -1,5 +1,6 @@
 from flask import request, Blueprint
 from db.monthly import MonthlyFunctions
+from util.api_exceptions import RequestException
 from util.jwt_functions import authenticate
 import traceback
 
@@ -19,6 +20,10 @@ def create_monthly_dist():
         _monthly_db.create_monthly_dist(month=month,year=year,est=requestData['estimates'],flats=requestData['payingFlats'])
         _monthly_db.populate_unsold(month=month,year=year,flats=requestData['unsoldFlats'])
         _monthly_db.idiot_box(month=month,year=year, flats=requestData['notPayingFlats'])
+    except RequestException as err:
+        traceback.print_exc()
+        print(err, type(err))
+        return {"error": str(err)}, 400
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
@@ -54,6 +59,10 @@ def update_expenses():
         prev_year = curr_year-1 if monthNumber == 1 else curr_year
         el_meter=requestData['electricity']
         _monthly_db.update_expenses(month=month,prev_month=prev,year=curr_year,prev_year=prev_year,el_month=_months[int(el_meter['month'])-1],el_year=int(el_meter['year']),el_amount=int(el_meter['amount']),el_unit=int(el_meter['units']),exp=requestData['expenditures'])
+    except RequestException as err:
+        traceback.print_exc()
+        print(err, type(err))
+        return {"error": str(err)}, 400
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))

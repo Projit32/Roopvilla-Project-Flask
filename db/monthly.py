@@ -1,5 +1,6 @@
 from db.client import MongoDBClient
 import math
+from util.api_exceptions import RequestException
 
 class MonthlyFunctions:
 
@@ -69,6 +70,9 @@ class MonthlyFunctions:
             print("Defaulter Modified :",result.modified_count)
 
     def create_monthly_dist(self,month,year,est=[], flats=[]):
+        if MonthlyFunctions._ms_collection.find_one({ "MONTH": month,"YEAR": year,}) is not None:
+            raise RequestException("Month-Year Combo Already Exists!")
+
         #calculations
         total_amount =0
         for item in est:
@@ -154,7 +158,12 @@ class MonthlyFunctions:
         print("Acknowledged:", electricity_results.acknowledged)
     
     def update_expenses(self,month,prev_month,year,prev_year,el_month,el_year,el_unit,el_amount,exp=[]):
-        total_acc=sum([owner_data["TOTAL"] for owner_data in MonthlyFunctions._ms_collection.find_one({"MONTH": month, "YEAR": year})["MONTHLY_DIST"]["OWNERWISE_DIST"] if owner_data["PAYMENT_RECEIVED"]=="YES"])
+        results=MonthlyFunctions._ms_collection.find_one({"MONTH": month, "YEAR": year})
+        print(results['MONTHLY_EXP'], len(results['MONTHLY_EXP']))
+        if len(results['MONTHLY_EXP']):
+            raise RequestException("Expenses Already Exists!")
+
+        total_acc=sum([owner_data["TOTAL"] for owner_data in results["MONTHLY_DIST"]["OWNERWISE_DIST"] if owner_data["PAYMENT_RECEIVED"]=="YES"])
         last_month_exp=list(MonthlyFunctions._ms_collection.find({"MONTH": prev_month, "YEAR": prev_year}))
         last_month_bal = last_month_exp[0]["MONTHLY_EXP"]["BALANCE"] if last_month_exp else 0
         
