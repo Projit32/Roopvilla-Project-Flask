@@ -14,7 +14,7 @@ def home_page():
     return render_template('home.html',path="home",name=request.args.get("ADM_NAME"))
 
 @frontend_pages.route('/mom', methods=['GET'])
-#@authenticate
+@authenticate
 def moms_page():
     return render_template('moms.html',path="mom",name=request.args.get("ADM_NAME"))
 

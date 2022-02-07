@@ -17,7 +17,7 @@ Minutes of Meetings - Roopvilla Project
           </svg>
       <div class="lh-1">
         <h1 class="h6 mb-0 text-white lh-1">Minutes of Meetings</h1>
-        <small>Since 2022</small>
+        <small>because writing it is so 1997.</small>
       </div>
       <div class="btn-group mx-3">
         <button type="button" class="btn btn-success" onclick="showOnly('#createMom');">
@@ -67,17 +67,101 @@ Minutes of Meetings - Roopvilla Project
                 <tbody id="momList">
                 </tbody>
             </table>
-            <button class="btn btn-primary my-2" type="submit">Create Munites of the Meeting</button>
+            <button class="btn btn-primary my-2" type="submit">Submit Munites of the Meeting</button>
     </form>
 </div>
 <div id='deleteMom' class="selectable bg-dark-green p-3 rounded-3">
-    Under Construction
+    <form id="fetchMomForm" class="my-2">
+        <div class="input-group" style="width: 50%;">
+            <span class="input-group-text">From</span>
+            <input type="date" class="form-control" name='getFromDate' required>
+            <span class="input-group-text">TO</span>
+            <input type="date" class="form-control" name='getToDate' required>
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+        </div>
+    </form>
+    <div class="my-3 d-flex" id="minuitesList">
+
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="momModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="momDateLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content text-black">
+          <div class="modal-header">
+            <h5 class="modal-title" id="momDateLabel"></h5>
+          </div>
+          <div class="modal-body" id="momData">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
 
 <script>
+  let fetchedMoms= new Map();
     $(function(){
         $(".selectable").hide();
         $("#message").hide();
+
+        //fetch Data
+        $("#fetchMomForm").submit(function(event){
+            event.preventDefault();
+            const data = $(this).serializeArray();
+            let formData = {}
+            data.forEach((element)=>{
+                formData[element.name]=element.value;
+            });
+            const from = new Date(formData['getFromDate']).toUTCString();
+            const to = new Date(formData['getToDate']).toUTCString();
+            console.log("Fetching");
+
+            APICall("GET", `/moms?startDate=${from}&endDate=${to}`,undefined, (data)=>{
+              fetchedMoms.clear();
+              let template =`
+                <table class="table table-dark table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col">Date</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                   
+                
+              `;
+              const target =$("#minuitesList").html("");
+              data['data'].forEach(element=>{
+                const now = Date.now()*Math.random();
+                fetchedMoms.set(now.toString(), element);
+                template+=`
+                    <tr>
+                      <td>${element.date}</td>
+                      <td>
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                          <button type="button" class="btn btn-primary btn-sm" value=${now} onclick="viewMom(this.value);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                              <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                              <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                            </svg>
+                          </button>
+                          <button type="button" class="btn btn-danger btn-sm" value=${now} onclick="removeMom(this.value);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                `;
+              });
+              template+=`</tbody></table>`;
+              target.html(template);
+            });
+        });
 
         //Create Mom Submit
         $("#createMomForm").submit(function(event){
@@ -95,14 +179,45 @@ Minutes of Meetings - Roopvilla Project
                 date:new Date(formData.createDate).toUTCString(),
                 moms: Array.from(momMap.values())
             }
-            console.log(reqData);
             APICall("POST", `/moms`,reqData, (data)=>{
                 this.reset();
                 momMap.clear();
                 displayMOMTable()
-            }, true );
+            });
         });
     })
+
+    function viewMom(id){
+      const data=fetchedMoms.get(id);
+      console.log(data['date']);
+      $("#momDateLabel").html(data['date']);
+      let template =`
+      <ul class="list-group list-group-flush">`;
+      data['mom'].forEach(element=>{
+        template+=`
+        <li class="list-group-item">
+          <figure>
+            <blockquote class="blockquote">
+              <p>${element.topic}</p>
+            </blockquote>
+            <figcaption class="blockquote-footer">
+              <cite title="Source Title">${element.decision}</cite>
+            </figcaption>
+          </figure>
+        </li>
+        `;
+      });
+
+      template+=`</ul>`;
+      $('#momData').html(template);
+      $('#momModal').modal('show'); 
+    }
+    function removeMom(id){
+      const date=fetchedMoms.get(id)['date'];
+      APICall("DELETE", "/moms", {date}, (data)=>{
+        $("#fetchMomForm").submit();
+      });
+    }
 
     function showOnly(id){
         $(".selectable").hide();
@@ -174,8 +289,9 @@ Minutes of Meetings - Roopvilla Project
   }
 
   
-  function APICall(method, url, data, callback, refreshData){
-    showLoading()
+  function APICall(method, url, data, callback){
+      console.log("API CALL:", method,url,data)
+    showLoading();
     const successCodes=[200,201];
     const client = new XMLHttpRequest();
     client.onload = function (){
@@ -184,14 +300,12 @@ Minutes of Meetings - Roopvilla Project
           if(callback){
             callback(JSON.parse(this.responseText));
           }
-          if(refreshData){}
         }
         else if(this.status === 204){
           displayMssage(true,undefined);
           if(callback){
             callback();
           }
-          if(refreshData){}
         }
         else{
           try{

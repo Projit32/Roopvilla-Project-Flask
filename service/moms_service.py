@@ -10,7 +10,7 @@ __moms_db= MinutesOfMeetingFunctions()
 moms_apis = Blueprint('moms_apis', __name__)
 
 @moms_apis.route('/moms', methods=['POST'])
-#@authenticate
+@authenticate
 def create_mom():
     try:
         data=request.get_json()
@@ -39,7 +39,7 @@ def create_mom():
         return {"error": "An error occurred creating MOM Record."}, 500
 
 @moms_apis.route('/moms', methods=['DELETE'])
-#@authenticate
+@authenticate
 def delete_mom():
     try:
         data=request.get_json()
@@ -57,7 +57,7 @@ def delete_mom():
         return {"error": "An error occurred Deleting MOM Record."}, 500
 
 @moms_apis.route('/moms', methods=['GET'])
-#@authenticate
+@authenticate
 def get_moms():
     try:
         data=queryParams=request.args
