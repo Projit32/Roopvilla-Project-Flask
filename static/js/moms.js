@@ -113,7 +113,7 @@ let fetchedMoms= new Map();
     }
     function removeMom(id){
       const date=fetchedMoms.get(id)['date'];
-      APICall("DELETE", "/moms", {date}, (data)=>{
+      APICall("DELETE", "/moms", {date}, ()=>{
         $("#fetchMomForm").submit();
       });
     }

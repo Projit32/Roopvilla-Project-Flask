@@ -26,7 +26,7 @@ Login - Roopvilla Project
           <label for="floatingPassword">Password</label>
         </div>
     
-        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+        <button class="w-100 btn btn-lg btn-primary" type="submit" id="loginSubmit">Sign in</button>
       </form>
       <br>
       {% include 'footer.html' %}
@@ -38,6 +38,9 @@ Login - Roopvilla Project
           $("#invalidCred").hide();
 
             $("#loginForm").submit(function(event){
+                const loadButton="#loginSubmit";
+                defaultContent= $(loadButton).html();
+                toggleLoadingButton(loadButton, true, undefined);
                 const data = $(this).serializeArray();
                 let reqData = {}
                 data.forEach((element)=>{
@@ -45,6 +48,7 @@ Login - Roopvilla Project
                 });
                 const client = new XMLHttpRequest();
                 client.onload = function (){
+                    toggleLoadingButton(loadButton, false, defaultContent);
                     if (this.status == 204) {
                         window.location="/home"
                     }
@@ -69,6 +73,16 @@ Login - Roopvilla Project
           $("#invalidCred").html(message);
           $("#invalidCred").show(200);
         }
+
+        function toggleLoadingButton(id, load, defaultText){
+            const template=`
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Loading...
+            `;
+            $(id).prop('disabled', load);
+            $(id).html(load? template : defaultText); 
+        }
+
 
     </script>
     
