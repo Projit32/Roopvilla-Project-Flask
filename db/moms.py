@@ -27,7 +27,7 @@ class MinutesOfMeetingFunctions:
                 "$gte":start,
                 "$lte":end
             }
-        })
+        }).sort("DATE")
         data =[]
         for item in result:
             mom_list=[]
