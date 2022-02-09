@@ -63,9 +63,16 @@ def get_moms():
         data=queryParams=request.args
         start=datetime.strptime(data.get('startDate').replace("GMT", "+00:00"), "%a, %d %b %Y %H:%M:%S %z")
         end=datetime.strptime(data.get('endDate').replace("GMT", "+00:00"), "%a, %d %b %Y %H:%M:%S %z")
+        if start>end:
+            raise RequestException("Start date cannot be later than end date!")
+        
         value = __moms_db.get_mom(start=start, end=end)
         return {"data":value}, 200
-        
+
+    except RequestException as err:
+        traceback.print_exc()
+        print(err, type(err))
+        return {"error": str(err)}, 400    
     except ValueError as err:
         traceback.print_exc()
         print(err, type(err))
