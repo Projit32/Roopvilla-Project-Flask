@@ -1,1 +1,132 @@
 {% extends "sidebar-base.html" %}
+
+{% block title %}
+Home - Roopvilla Project
+{% endblock %}
+
+{% block morestyles %}
+<link href="static/css/home.css" rel="stylesheet">
+{% endblock %}
+
+{% block panel %}
+<div class="overflow-auto quater-height">
+    <div class="container">
+        <div class="d-flex align-items-center p-3 my-3 text-white bg-purple rounded shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-fill mx-2" viewBox="0 0 16 16">
+                <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+              </svg>
+          <div class="lh-1">
+            <h1 class="h6 mb-0 text-white lh-1">Feature Management</h1>
+            <small>Why static when it can be dynamic</small>
+          </div>
+          <div class="btn-group mx-3">
+            <button type="button" class="btn btn-success" onclick="showOnly('#createFeature');">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-node-plus-fill" viewBox="0 0 16 16">
+                    <path d="M11 13a5 5 0 1 0-4.975-5.5H4A1.5 1.5 0 0 0 2.5 6h-1A1.5 1.5 0 0 0 0 7.5v1A1.5 1.5 0 0 0 1.5 10h1A1.5 1.5 0 0 0 4 8.5h2.025A5 5 0 0 0 11 13zm.5-7.5v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2v-2a.5.5 0 0 1 1 0z"/>
+                  </svg>
+                Create
+            </button>
+            <button type="button" class="btn btn-warning" onclick="showOnly('#updateFeature');">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-node-minus-fill" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M16 8a5 5 0 0 1-9.975.5H4A1.5 1.5 0 0 1 2.5 10h-1A1.5 1.5 0 0 1 0 8.5v-1A1.5 1.5 0 0 1 1.5 6h1A1.5 1.5 0 0 1 4 7.5h2.025A5 5 0 0 1 16 8zm-2 0a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h5A.5.5 0 0 0 14 8z"/>
+                  </svg>
+                Edit
+            </button>
+          </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="d-flex align-items-center p-3 my-3 text-white bg-pink rounded shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-bounding-box mx-2" viewBox="0 0 16 16">
+                <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5z"/>
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+              </svg>
+          <div class="lh-1">
+            <h1 class="h6 mb-0 text-white lh-1">Session Management</h1>
+            <small id="sessionDesc">There are X expired sessions</small>
+          </div>
+          <div class="btn-group mx-3">
+            <button type="button" class="btn btn-danger" >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                  </svg>
+                Delete Expired Sessions
+            </button>
+          </div>
+        </div>
+    </div>
+</div>
+<div class="m-auto-1 text-center" >
+    <span id="message">Hello there</span>
+</div>
+<!--Forms-->
+<div class="overflow-auto seventy-height my-4">
+    <div class="p-3 mb-4 rounded-3 bg-dark-green selectable" id="createFeature">
+        <div class="container-fluid py-3 ">
+          <h3 class="display-7 fw-bold">Feature Onboarding</h3>
+            <form id="createFeatureForm">
+                <div class="my-2">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Heading</span>
+                        <input type="text" class="form-control form-select-sm" placeholder="Feature Heading" name='heading' required>
+                        <span class="input-group-text">Focus</span>
+                        <input type="text" class="form-control form-select-sm" placeholder="Focused Word" name='focused'>
+                        <span class="input-group-text">Description</span>
+                        <input type="text" class="form-control form-select-sm" placeholder="Description" name='desc'>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Image</span>
+                        <input type="url" class="form-control form-select-sm" placeholder="Feature Image" name='img' required>
+                        <span class="input-group-text">Button</span>
+                        <input type="url" class="form-control form-select-sm" placeholder="Focused Button" name='btn'>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Add Feature</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="p-3 mb-4 rounded-3 bg-dark-green selectable" id="updateFeature">
+        <div class="container-fluid py-3 ">
+          <h3 class="display-7 fw-bold">Feature Editing</h3>
+            <form id="updateFeatureForm">
+                <div class="my-2">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control form-select-sm visually-hidden" required name="id">
+                        <span class="input-group-text">Heading</span>
+                        <input type="text" class="form-control form-select-sm" placeholder="Feature Heading" name='heading' required>
+                        <span class="input-group-text">Focus</span>
+                        <input type="text" class="form-control form-select-sm" placeholder="Focused Word" name='focused'>
+                        <span class="input-group-text">Description</span>
+                        <input type="text" class="form-control form-select-sm" placeholder="Description" name='desc'>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Image</span>
+                        <input type="url" class="form-control form-select-sm" placeholder="Feature Image" name='img' required>
+                        <span class="input-group-text">Button</span>
+                        <input type="url" class="form-control form-select-sm" placeholder="Focused Button" name='btn'>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Update Feature</button>
+                </div>
+            </form>
+        </div>
+        Select a feature to be updated or deleted:
+        <table class="table table-dark table-striped table-sm">
+            <thead>
+                <tr>
+                    <th scope="col">Feature Heading</th>
+                    <th scope="col">Last Modified</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="featureList">
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block morescripts %}
+<script src="static/js/features.js"></script>
+{% endblock %}
