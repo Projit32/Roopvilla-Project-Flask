@@ -7,3 +7,8 @@
 .bg-purple {
   background-color: #6f42c1;
 }
+
+.bg-dark-red{
+  background-color: #e0455f;
+  background-image: linear-gradient(340deg, #e0455f 0%, #44000b 74%);
+}

@@ -17,3 +17,8 @@ background-color: #00000000;
   background-color:#55efc4;
   background-image:linear-gradient(315deg, #55efc4 0%, #000000 74%);
 }
+
+.bg-dark-purple{
+    background-color: #923cb5;
+    background-image: linear-gradient(341deg, #923cb5 0%, #000000 74%);
+}
