@@ -5,7 +5,7 @@ from urllib.parse import quote
 from util.jwt_functions import authenticate
 import traceback 
  
-__featuress_db= FeaturesFunctions()
+__features_db= FeaturesFunctions()
 features_apis = Blueprint('features_apis', __name__)
 
 @features_apis.route('/features', methods=['POST'])
@@ -16,7 +16,7 @@ def create_features():
         date=datetime.strptime(data['date'].replace("GMT", "+00:00"), "%a, %d %b %Y %H:%M:%S %z")
         focused= data['focused'] if 'focused' in data.keys() else None
         button = quote(data['btn'].encode('utf8')) if 'btn' in data.keys() else None 
-        __featuress_db.add_features(heading=data['heading'],description=data['desc'],image_link=quote(data['img'].encode('utf8')),date=date,focused_word=focused,button_link=button)
+        __features_db.add_features(heading=data['heading'],description=data['desc'],image_link=quote(data['img'].encode('utf8')),date=date,focused_word=focused,button_link=button)
         
         return {}, 201
     except ValueError as err:
@@ -36,7 +36,7 @@ def edit_features():
         date=datetime.strptime(data['date'].replace("GMT", "+00:00"), "%a, %d %b %Y %H:%M:%S %z")
         focused= data['focused'] if 'focused' in data.keys() else None
         button = quote(data['btn'].encode('utf8')) if 'btn' in data.keys() else None 
-        __featuress_db.replace_features(id=data['id'],heading=data['heading'],description=data['desc'],image_link=quote(data['img'].encode('utf8')),date=date,focused_word=focused,button_link=button)
+        __features_db.replace_features(id=data['id'],heading=data['heading'],description=data['desc'],image_link=quote(data['img'].encode('utf8')),date=date,focused_word=focused,button_link=button)
         
         return "", 204
     except ValueError as err:
@@ -53,7 +53,7 @@ def edit_features():
 def delete_features():
     try:
         data=request.get_json()
-        __featuress_db.delete_feature(id=data['id'])
+        __features_db.delete_feature(id=data['id'])
         return "", 204
     except Exception as err:
         traceback.print_exc()
@@ -62,9 +62,9 @@ def delete_features():
 
 @features_apis.route('/features', methods=['GET'])
 @authenticate
-def get_featuress():
+def get_features():
     try:
-        value =__featuress_db.get_features()
+        value =__features_db.get_features()
         return {"data":value}, 200
     except Exception as err:
         traceback.print_exc()

@@ -44,10 +44,10 @@ Home - Roopvilla Project
               </svg>
           <div class="lh-1">
             <h1 class="h6 mb-0 text-white lh-1">Session Management</h1>
-            <small id="sessionDesc">There are X expired sessions</small>
+            <small id="sessionDesc">There are <span id="sessionCount"></span> expired sessions</small>
           </div>
           <div class="btn-group mx-3">
-            <button type="button" class="btn btn-danger" >
+            <button type="button" class="btn btn-danger" id="deleteExpiredSessionsBtn" onclick="deleteExpiredSessions(this.id);">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
                     <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
                   </svg>
@@ -128,5 +128,5 @@ Home - Roopvilla Project
 
 
 {% block morescripts %}
-<script src="static/js/features.js"></script>
+<script src="static/js/home.js"></script>
 {% endblock %}
