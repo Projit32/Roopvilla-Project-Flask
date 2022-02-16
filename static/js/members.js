@@ -38,6 +38,25 @@ function updatePassword(){
   APICall("PATCH", "/members/changePassword", requestData, memberData.name);
 }
 
+function fetchUnoccupiedFlats(){
+  const client = new XMLHttpRequest();
+  client.onload = function (){
+      if (this.status === 200) {
+        let target=$("#unoccupiedFlats").html("");
+        const data = JSON.parse(this.responseText);
+        data.data.unoccupiedFlats.forEach(element=>{
+          let template=`<option value="${element}">${element}</option>`;
+          target.append(template);
+        });
+      }
+      else{
+        console.log(JSON.parse(this.responseText))
+      }
+  }
+  client.open("GET","/flats/unoccupiedFlats",true);
+  client.send();
+}
+
 function setEmails(){
   let memberData = memberMap.get($("#memberSelect").val());
   let emailList= $("#newEmails").val().split(',');
@@ -106,6 +125,7 @@ function updateMemberDetails(value)
 
 let memberMap= new Map();
 function fetchMemberData(defaultValue){
+  fetchUnoccupiedFlats();
   const client = new XMLHttpRequest();
   client.onload = function (){
     const data =JSON.parse(this.responseText);
@@ -118,7 +138,6 @@ function fetchMemberData(defaultValue){
           target.append(template);
         });
         if(defaultValue){
-          console.log(defaultValue);
           $("#memberSelect").val(defaultValue).change();
         }
         else{
@@ -145,6 +164,7 @@ fetchMemberData();
 
 //Create Member
 $("#createMember").submit(function(event){
+    event.preventDefault();
     const data = $(this).serializeArray();
     let formData = {}
     data.forEach((element)=>{
@@ -155,11 +175,10 @@ $("#createMember").submit(function(event){
     let requestData={
       name: formData.name,
       emails: formData.emails.split(','),
-      flats: formData.flats.split(',')
+      flats: $("#unoccupiedFlats").val()
     };
     APICall("POST","/members",requestData, formData.name);
     this.reset();
-    event.preventDefault();
 });
 });
 

@@ -94,7 +94,7 @@ $(function(){
     client.onload = function (){
       const data =JSON.parse(this.responseText);
         if (this.status == 201) {
-            //TODO: Implement what to do
+            fetchRates();
             displayMssage("#EFCsuccessMessage");
         }
         else{

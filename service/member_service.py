@@ -1,5 +1,6 @@
 from flask import request, Blueprint, jsonify
 from db.members import MemeberFunctions
+from util.api_exceptions import RequestException
 from util.jwt_functions import authenticate
 import traceback
 
@@ -51,6 +52,10 @@ def add_member():
         data = request.get_json()
         _members_db.add_members(name=data['name'],emails=data['emails'],flats=data['flats'])
         return {},201
+    except RequestException as err:
+        traceback.print_exc()
+        print(err, type(err))
+        return {"error": str(err)}, 400
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
@@ -69,6 +74,10 @@ def remove_member():
             _members_db.remove_flat_ownership(flat=data['flat'],email=data['email'])
 
         return '',204
+    except RequestException as err:
+        traceback.print_exc()
+        print(err, type(err))
+        return {"error": str(err)}, 400
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
