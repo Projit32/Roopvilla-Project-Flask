@@ -27,8 +27,7 @@ function updateRate(){
   client.onload = function (){
     const data =JSON.parse(this.responseText);
       if (this.status == 200) {
-          fetchRates();
-          $("#flatRates").val(value).change();
+          fetchRates(value);
           displayMssage("#EFUsuccessMessage");
       }
       else{
