@@ -1,4 +1,5 @@
 from flask import request, Blueprint
+from db.flats import FlatsFunctions
 from db.monthly import MonthlyFunctions
 from util.api_exceptions import RequestException
 from util.jwt_functions import authenticate
@@ -18,7 +19,9 @@ def create_monthly_dist():
         year=int(queryParams.get('year'))
         print(month,year)
         _monthly_db.create_monthly_dist(month=month,year=year,est=requestData['estimates'],flats=requestData['payingFlats'])
-        _monthly_db.populate_unsold(month=month,year=year,flats=requestData['unsoldFlats'])
+        unsold_flats=FlatsFunctions().get_unoccupied_flats()
+        print("Unsold Flats: ",unsold_flats)
+        _monthly_db.populate_unsold(month=month,year=year,flats=unsold_flats)
         _monthly_db.idiot_box(month=month,year=year, flats=requestData['notPayingFlats'])
     except RequestException as err:
         traceback.print_exc()

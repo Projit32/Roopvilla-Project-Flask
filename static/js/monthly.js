@@ -338,8 +338,7 @@
       const requestData ={
         estimates,
         payingFlats: paying,
-        notPayingFlats: notPaying,
-        unsoldFlats:formData['unsold'].split(',')
+        notPayingFlats: notPaying
       }
       APICall("POST", `/months?year=${parseInt(formData['createDistYear'])}&month=${parseInt(formData['createDistMonth'])}`,requestData, (data)=>{
         estimateMap.clear();
