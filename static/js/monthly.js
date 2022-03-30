@@ -1,6 +1,22 @@
+  function fetchEstimates(){
+    APICall("GET", "/estimates", undefined, function (data) {
+        estimateMap.clear();
+        data['data'].forEach(element=>{
+          const now = Date.now()+Math.floor(Math.random() * 100000000000);
+          fixed={
+            name:element.name,
+            amount:element.monthly
+          }
+      
+          estimateMap.set(now.toString(), fixed);
+        });
+        displayEstimateTable();
+    });
+  }
 
   function createDistributionForm(){
     disableMonthandYear(true);
+    fetchEstimates();
     showOnly("#createForm");
   }
 

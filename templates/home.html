@@ -9,7 +9,7 @@ Home - Roopvilla Project
 {% endblock %}
 
 {% block panel %}
-<div class="overflow-auto quater-height">
+<div class="overflow-auto thirty-height">
     <div class="container">
         <div class="d-flex align-items-center p-3 my-3 text-white bg-purple rounded shadow-sm">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-fill mx-2" viewBox="0 0 16 16">
@@ -17,7 +17,7 @@ Home - Roopvilla Project
               </svg>
           <div class="lh-1">
             <h1 class="h6 mb-0 text-white lh-1">Feature Management</h1>
-            <small>Why static when it can be dynamic</small>
+            <small>Create, delete or edit the featured section of the home page.</small>
           </div>
           <div class="btn-group mx-3">
             <button type="button" class="btn btn-success" onclick="showOnly('#createFeature');">
@@ -56,12 +56,36 @@ Home - Roopvilla Project
           </div>
         </div>
     </div>
+
+    <div class="container">
+        <div class="d-flex align-items-center p-3 my-3 text-white bg-blue rounded shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list-task mx-2" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M2 2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V3a.5.5 0 0 0-.5-.5H2zM3 3H2v1h1V3z"/>
+                <path d="M5 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM5.5 7a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9zm0 4a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9z"/>
+                <path fill-rule="evenodd" d="M1.5 7a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V7zM2 7h1v1H2V7zm0 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H2zm1 .5H2v1h1v-1z"/>
+            </svg>
+          <div class="lh-1">
+            <h1 class="h6 mb-0 text-white lh-1">Fixed Estimates</h1>
+            <small>Create, delete or edit Fixed Estimates for monthly distribution.</small>
+          </div>
+          <div class="btn-group mx-3">
+            <button type="button" class="btn btn-primary" onclick="showOnly('#changeEstimates');" id="estimateButton">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                  </svg>
+                Load Fixed Estimates
+            </button>
+          </div>
+        </div>
+    </div>
+    
 </div>
 <div class="m-auto-1 text-center" >
     <span id="message">Hello there</span>
 </div>
 <!--Forms-->
-<div class="overflow-auto seventy-height my-4">
+<div class="overflow-auto sixty-height my-4">
     <div class="p-3 mb-4 rounded-3 bg-dark-green selectable" id="createFeature">
         <div class="container-fluid py-3 ">
           <h3 class="display-7 fw-bold">Feature Onboarding</h3>
@@ -122,6 +146,15 @@ Home - Roopvilla Project
             <tbody id="featureList">
             </tbody>
         </table>
+    </div>
+
+    <div class="p-3 mb-4 rounded-3 bg-dark-yellow selectable" id="changeEstimates">
+        <div class="container-fluid py-3 ">
+          <h3 class="display-7 fw-bold">Fixed Estimates</h3>
+          <button class="btn btn-primary mx-2" onclick="addEstimateField();">Add Estimates</button>
+          <div class="my-2" id="estimatesList">
+          </div>  
+        </div>
     </div>
 </div>
 {% endblock %}

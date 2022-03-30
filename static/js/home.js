@@ -63,6 +63,7 @@ $(function () {
     $("#message").hide();
     fetchFeatures();
     fetchExpiredSessions();
+    fetchEstimate();
 
     //Create Form Submit
     $("#createFeatureForm").submit(function (event) {
@@ -234,4 +235,98 @@ function APICallWithButtonLoading(method, url, data, callback, button_id) {
         client.send();
     }
 
+}
+
+function addEstimateField(){
+    let target = $("#estimatesList");
+
+    let content = `
+    <form class="input-group mb-3 my-2"  onsubmit="addNewEstimate(event, this);">
+        <span class="input-group-text">Item Name</span>
+        <input type="text" class="form-control form-select-sm"  name='name' required>
+        <span class="input-group-text">Monthly</span>
+        <input type="number" class="form-control form-select-sm"  name='monthly' step="0.1" required  onkeyup="updateAnnual(this);">
+        <span class="input-group-text">Annually</span>
+        <input type="number" class="form-control form-select-sm"  name='annually' step="0.1" required onkeyup="updateMonth(this);">
+        <button class="btn btn-primary" type="submit">Add Feature</button>
+    </form>`;
+
+    target.append(content);
+}
+function editEstimate(e,form) {
+    e.preventDefault();
+    const data = $(form).serializeArray();
+    let formData = {}
+    data.forEach((element) => {
+        if (element.value !== '') {
+            formData[element.name] = element.value;
+        }
+    });
+    let btn=$("button[type=submit]",form);
+    console.log(btn);
+    APICallWithButtonLoading("PATCH", "/estimates", formData, function(data){
+        fetchEstimate();
+    }, btn);
+}
+function addNewEstimate(e,form) {
+    e.preventDefault();
+    const data = $(form).serializeArray();
+    let formData = {}
+    data.forEach((element) => {
+        if (element.value !== '') {
+            formData[element.name] = element.value;
+        }
+    });
+    let btn=$("button[type=submit]",form);
+    console.log(btn);
+    APICallWithButtonLoading("POST", "/estimates", formData, function(data){
+        fetchEstimate();
+    },btn);
+}
+function deleteEstimate(id, btn){
+    data={id};
+    console.log(data);
+    APICallWithButtonLoading("Delete", "/estimates", data, function(data){
+        fetchEstimate();
+    },btn);
+}
+
+function fetchEstimate(){
+    APICall("GET", "/estimates", undefined, function (data) {
+        let target=$("#estimatesList").html("");
+        console.log(data);
+        data['data'].forEach(element=>{
+            let content = `
+                <form class="input-group mb-3 my-2"  onsubmit="editEstimate(event, this);">
+                    <input type="text" class="form-control form-select-sm visually-hidden" required name="id" value="${element.id}">
+                    <span class="input-group-text">Item Name</span>
+                    <input type="text" class="form-control form-select-sm" value="${element.name}" name='name' required>
+                    <span class="input-group-text">Monthly</span>
+                    <input type="number" class="form-control form-select-sm" value="${element.monthly}" name='monthly' step="0.1" required onkeyup="updateAnnual(this);">
+                    <span class="input-group-text">Annually</span>
+                    <input type="number" class="form-control form-select-sm" value="${element.annually}" name='annually' step="0.1" required onkeyup="updateMonth(this);">
+                    <button class="btn btn-warning" type="submit">Update Feature</button>
+                    <button class="btn btn-danger" type="button" onclick='deleteEstimate("${element.id}",this);'>Remove Feature</button>
+                </form>`;
+
+            target.append(content);
+        });
+    });
+}
+
+function updateAnnual(month){
+    console.log(month.value);
+    if(month.value)
+    {
+        const annually=Number(month.value)*12;
+        $("input[name='annually']",$(month).parent()).val(annually.toFixed(1));
+    }
+}
+function updateMonth(annual){
+    console.log(annual.value);
+    if(annual.value)
+    {
+        const monthly=Number(annual.value)/12;
+        $("input[name='monthly']",$(annual).parent()).val(monthly.toFixed(1));
+    }
 }
