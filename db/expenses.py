@@ -1,4 +1,3 @@
-from tkinter import N
 from db.client import MongoDBClient
 from bson import ObjectId
 
