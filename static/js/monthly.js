@@ -44,6 +44,47 @@
     $("#mainYear").prop('disabled', set_disable);
   }
 
+  function APICallPromise(method, url, data) {
+    return new Promise(function (resolve, reject) {
+      showLoading();
+      const successCodes = [200, 201];
+      const client = new XMLHttpRequest();
+      client.onload = function () {
+          if (successCodes.includes(this.status)) {
+              displayMssage(true, undefined);
+              resolve(JSON.parse(this.responseText))
+          }
+          else if (this.status === 204) {
+              displayMssage(true, undefined);
+              if (callback) {
+                resolve()
+              }
+          }
+          else {
+              try {
+                  let response = JSON.parse(this.responseText)
+                  console.log(response);
+                  displayMssage(false, response.error);
+                  reject(response);
+              }
+              catch (err) {
+                  displayMssage(false, undefined);
+                  reject(err);
+              }
+              
+          }
+      }
+      client.open(method, url, true);
+      if (data) {
+          client.setRequestHeader("Content-type", "application/json");
+          client.send(JSON.stringify(data));
+      }
+      else {
+          client.send();
+      }
+    });
+  }
+
   function deleteMonth(){
     let url = `/months?year=${parseInt(selectedYear)}&month=${monthsList.indexOf(selectedMonth)+1}`;
     selectedMonth=undefined;
@@ -56,6 +97,28 @@
    * 
    * 
   * */
+
+  async function fetchEstimatesAndExpenses(){
+    expenseMap.clear();
+    let expenses=await APICallPromise("GET", `/expenses?month=${selectedMonth}&year=${parseInt(selectedYear)}`,undefined);
+    let estimates=await APICallPromise("GET", `/estimates`,undefined);
+    estimates.data.forEach(element=>{
+      expenseMap.set((Date.now()+Math.floor(Math.random() * 100000000000)).toString(), {
+        name:element.name,
+        category:"FXD",
+        amount:element.monthly
+      });
+    });
+    expenses.data.forEach(element=>{
+      expenseMap.set((Date.now()+Math.floor(Math.random() * 100000000000)).toString(), {
+        name:element.name,
+        category:element.type,
+        amount:element.amount
+      });
+    });
+    displayExpensesTable();
+  }
+
   let expenseMap = new Map();
   function AddExpense(){
     if(!$("#expenseName").val() || !$("#expenseAmount").val){
@@ -247,9 +310,9 @@
     
   }
 
-  function updateMonthlyDetails(value){
+  async function updateMonthlyDetails(value){
     selectedMonth=value;
-
+    await fetchEstimatesAndExpenses();
     //expense Monthly Data
     $("#updateExpenseLabel").html(`Update Expenses for ${selectedMonth} of ${selectedYear}`);
 
@@ -348,7 +411,7 @@
 
       let estimates=[];
       estimateMap.forEach((value,key)=>{
-        estimates.push({ITEM:value.name, Price:parseInt(value.amount)});
+        estimates.push({ITEM:value.name, Price:Number(value.amount)});
       })
 
       const requestData ={
@@ -389,14 +452,14 @@
         expenditures.push({
           NAME:value.name,
           CATEGORY:value.category,
-          COST:parseInt(value.amount)
+          COST:Number(value.amount)
         });
       });
       let electricity={
         month:parseInt(formData['bill_month']),
         year:parseInt(formData['bill_year']),
-        units:parseInt(formData['bill_units']),
-        amount:parseInt(formData['bill_amount'])
+        units:Number(formData['bill_units']),
+        amount:Number(formData['bill_amount'])
       }
       
       const requestData={

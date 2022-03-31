@@ -45,7 +45,6 @@ function displayFeatureTable() {
 
 function editFeature(featureID) {
     const data = featureMap.get(featureID);
-    console.log(data);
     for (let key in data) {
         $("#updateFeature input[name=" + key + "]").val(decodeURIComponent(data[key]));
     }
@@ -77,7 +76,6 @@ $(function () {
 
         });
         formData['date'] = new Date().toUTCString()
-        console.log(formData);
         APICall("POST", "/features", formData, () => {
             $("#createFeatureForm").trigger('reset');
             fetchFeatures();
@@ -95,7 +93,6 @@ $(function () {
             }
         });
         formData['date'] = new Date().toUTCString()
-        console.log(formData);
         APICall("PUT", "/features", formData, () => {
             $("#updateFeatureForm").trigger('reset');
             fetchFeatures();
@@ -248,7 +245,7 @@ function addEstimateField(){
         <input type="number" class="form-control form-select-sm"  name='monthly' step="0.1" required  onkeyup="updateAnnual(this);">
         <span class="input-group-text">Annually</span>
         <input type="number" class="form-control form-select-sm"  name='annually' step="0.1" required onkeyup="updateMonth(this);">
-        <button class="btn btn-primary" type="submit">Add Feature</button>
+        <button class="btn btn-primary" type="submit">Add</button>
     </form>`;
 
     target.append(content);
@@ -263,7 +260,6 @@ function editEstimate(e,form) {
         }
     });
     let btn=$("button[type=submit]",form);
-    console.log(btn);
     APICallWithButtonLoading("PATCH", "/estimates", formData, function(data){
         fetchEstimate();
     }, btn);
@@ -278,14 +274,12 @@ function addNewEstimate(e,form) {
         }
     });
     let btn=$("button[type=submit]",form);
-    console.log(btn);
     APICallWithButtonLoading("POST", "/estimates", formData, function(data){
         fetchEstimate();
     },btn);
 }
 function deleteEstimate(id, btn){
     data={id};
-    console.log(data);
     APICallWithButtonLoading("Delete", "/estimates", data, function(data){
         fetchEstimate();
     },btn);
@@ -294,7 +288,6 @@ function deleteEstimate(id, btn){
 function fetchEstimate(){
     APICall("GET", "/estimates", undefined, function (data) {
         let target=$("#estimatesList").html("");
-        console.log(data);
         data['data'].forEach(element=>{
             let content = `
                 <form class="input-group mb-3 my-2"  onsubmit="editEstimate(event, this);">
@@ -305,8 +298,8 @@ function fetchEstimate(){
                     <input type="number" class="form-control form-select-sm" value="${element.monthly}" name='monthly' step="0.1" required onkeyup="updateAnnual(this);">
                     <span class="input-group-text">Annually</span>
                     <input type="number" class="form-control form-select-sm" value="${element.annually}" name='annually' step="0.1" required onkeyup="updateMonth(this);">
-                    <button class="btn btn-warning" type="submit">Update Feature</button>
-                    <button class="btn btn-danger" type="button" onclick='deleteEstimate("${element.id}",this);'>Remove Feature</button>
+                    <button class="btn btn-warning" type="submit">Update</button>
+                    <button class="btn btn-danger" type="button" onclick='deleteEstimate("${element.id}",this);'>Delete</button>
                 </form>`;
 
             target.append(content);
@@ -315,7 +308,6 @@ function fetchEstimate(){
 }
 
 function updateAnnual(month){
-    console.log(month.value);
     if(month.value)
     {
         const annually=Number(month.value)*12;
@@ -323,10 +315,134 @@ function updateAnnual(month){
     }
 }
 function updateMonth(annual){
-    console.log(annual.value);
     if(annual.value)
     {
         const monthly=Number(annual.value)/12;
         $("input[name='monthly']",$(annual).parent()).val(monthly.toFixed(1));
     }
 }
+
+async function loadExpenseForm(){
+    try{
+      $("#addExpenseBtn").attr('disabled', true);
+      categories= await fetch_categories();
+      active_months= await fetch_active_months();
+      showOnly('#addExpense');
+      $("#addExpenseBtn").attr('disabled', false);
+    }
+    catch(err){
+      console.log(err);
+    }
+  }
+
+  function addNewExpense(event, form){
+    event.preventDefault();
+    const data = $(form).serializeArray();
+      let formData = {}
+      data.forEach((element)=>{
+          formData[element.name]=element.value;
+      });
+      let type=$("select[name='type']",form).find(":selected").text();
+      let time=$("select[name='active_month']",form).find(":selected").text().split('-');
+      let reqData={
+        name:formData['name'],
+        type,
+        amount:Number(formData['amount']),
+        month:time[0],
+        year:parseInt(time[1])
+      };
+      APICallWithButtonLoading("POST", "/expenses", reqData, function () { 
+        $(":input",form).prop("disabled", true);
+        $("button[type=submit]",form).html("Added!");
+        $(form).slideUp(1500, function () {$(form).remove();});
+      }, $("button[type=submit]",form))
+  }
+
+  function addExpenseField(){
+    let target = $("#expensesList");
+
+    let content = `
+    <form class="input-group mb-3 my-2"  onsubmit="addNewExpense(event, this);">
+        <span class="input-group-text">Item Name</span>
+        <input type="text" class="form-control form-select-sm"  name='name' required>
+        <span class="input-group-text">Item Name</span>
+        <input type="number" class="form-control form-select-sm"  name='amount' required step=0.1>
+        <span class="input-group-text">Type</span>
+        <select class="form-select" name='type'>
+          ${(()=>{
+            let content="";
+            categories.forEach(element=>{
+              content+= `<option value="${element}">${element}</option>`;
+            });
+            return content;
+          })()}
+        </select>
+        <span class="input-group-text">For Month</span>
+        <select class="form-select" name='active_month'>
+          ${(()=>{
+            let content="";
+            active_months.forEach(element=>{
+              content+= `<option value="${element.month+'-'+element.year}">${element.month+'-'+element.year}</option>`;
+            });
+            return content;
+          })()}
+        </select>
+        <button class="btn btn-warning" type="submit">Add</button>
+    </form>`;
+
+    target.append(content);
+  }
+
+  let categories=[];
+  let active_months=[]
+
+  async function fetch_categories(){
+    let data = await APICallPromise("GET", "/months/estimationCategories", undefined);
+    return data['data'];
+  }
+
+  async function fetch_active_months(){
+    let data = await APICallPromise("GET", "/months/activeMonths", undefined);
+    return data['data'];
+  }
+
+  function APICallPromise(method, url, data) {
+    return new Promise(function (resolve, reject) {
+      showLoading();
+      const successCodes = [200, 201];
+      const client = new XMLHttpRequest();
+      client.onload = function () {
+          if (successCodes.includes(this.status)) {
+              displayMssage(true, undefined);
+              resolve(JSON.parse(this.responseText))
+          }
+          else if (this.status === 204) {
+              displayMssage(true, undefined);
+              if (callback) {
+                resolve()
+              }
+          }
+          else {
+              try {
+                  let response = JSON.parse(this.responseText)
+                  console.log(response);
+                  displayMssage(false, response.error);
+                  reject(response);
+              }
+              catch (err) {
+                  displayMssage(false, undefined);
+                  reject(err);
+              }
+              
+          }
+      }
+      client.open(method, url, true);
+      if (data) {
+          client.setRequestHeader("Content-type", "application/json");
+          client.send(JSON.stringify(data));
+      }
+      else {
+          client.send();
+      }
+    });
+  }

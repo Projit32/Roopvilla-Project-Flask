@@ -157,6 +157,13 @@ class MonthlyFunctions:
         electricity_results=MonthlyFunctions._electricity_collection.delete_one({"PAID_MON":month, "PAID_YR":year})
         print("Acknowledged:", electricity_results.acknowledged)
     
+    def get_active_months(self):
+        data = MonthlyFunctions._ms_collection.find({"MONTHLY_EXP":{"$eq": {}}})
+        results= []
+        for item in data:
+            results.append({'month':item['MONTH'], 'year':item['YEAR']})
+        return results
+    
     def update_expenses(self,month,prev_month,year,prev_year,el_month,el_year,el_unit,el_amount,exp=[]):
         results=MonthlyFunctions._ms_collection.find_one({"MONTH": month, "YEAR": year})
         print(results['MONTHLY_EXP'], len(results['MONTHLY_EXP']))

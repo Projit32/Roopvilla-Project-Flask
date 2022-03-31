@@ -61,7 +61,7 @@ def update_expenses():
         curr_year=int(queryParams.get('year'))
         prev_year = curr_year-1 if monthNumber == 1 else curr_year
         el_meter=requestData['electricity']
-        _monthly_db.update_expenses(month=month,prev_month=prev,year=curr_year,prev_year=prev_year,el_month=_months[int(el_meter['month'])-1],el_year=int(el_meter['year']),el_amount=int(el_meter['amount']),el_unit=int(el_meter['units']),exp=requestData['expenditures'])
+        _monthly_db.update_expenses(month=month,prev_month=prev,year=curr_year,prev_year=prev_year,el_month=_months[int(el_meter['month'])-1],el_year=int(el_meter['year']),el_amount=float(el_meter['amount']),el_unit=float(el_meter['units']),exp=requestData['expenditures'])
     except RequestException as err:
         traceback.print_exc()
         print(err, type(err))
@@ -153,5 +153,16 @@ def get_estimation_categories():
     except Exception as err:
         traceback.print_exc()
         print(err, type(err))
-        return {"error": "An error occurred Getting payments"}, 500
+        return {"error": "An error occurred Getting categories"}, 500
+    return {"data":data},200
+
+@monthly_apis.route('/months/activeMonths', methods=['GET'])
+@authenticate
+def get_active_months():
+    try:
+        data=_monthly_db.get_active_months()
+    except Exception as err:
+        traceback.print_exc()
+        print(err, type(err))
+        return {"error": "An error occurred Getting active months"}, 500
     return {"data":data},200

@@ -2,7 +2,7 @@ from flask import Flask, session
 from datetime import timedelta
 from flask_session import Session
 from pymongo import MongoClient
-from service import user_service, ef_service, member_service, monthly_service, frontend_service, moms_service, features_service, sessions_service, flats_service, estimate_services
+from service import user_service, ef_service, member_service, monthly_service, frontend_service, moms_service, features_service, sessions_service, flats_service, estimate_services, expense_services
 import os
 
 
@@ -17,6 +17,7 @@ app.config["SESSION_MONGODB_DB"] = "roopvilla_maintenance"
 app.config["SESSION_MONGODB_COLLECT"] ="psessions"
 Session(app)
 
+app.register_blueprint(expense_services.expenses_apis)
 app.register_blueprint(estimate_services.estimates_apis)
 app.register_blueprint(flats_service.flats_apis)
 app.register_blueprint(sessions_service.sessions_apis)
