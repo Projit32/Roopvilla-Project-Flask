@@ -34,8 +34,9 @@
     disableMonthandYear(false);
     showOnly("#deleteForm");
   }
-  function updateExpensesForm(){
+  async function updateExpensesForm(){
     disableMonthandYear(false);
+    await fetchEstimatesAndExpenses();
     showOnly("#expensesForm");
   }
 
