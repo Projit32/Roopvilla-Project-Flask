@@ -365,7 +365,7 @@ async function loadExpenseForm(){
     <form class="input-group mb-3 my-2"  onsubmit="addNewExpense(event, this);">
         <span class="input-group-text">Item Name</span>
         <input type="text" class="form-control form-select-sm"  name='name' required>
-        <span class="input-group-text">Item Name</span>
+        <span class="input-group-text">Amount</span>
         <input type="number" class="form-control form-select-sm"  name='amount' required step=0.1>
         <span class="input-group-text">Type</span>
         <select class="form-select" name='type'>
