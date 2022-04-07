@@ -20,7 +20,7 @@ class ExpensesFunctions:
         print("Fixed expenses Insert ID: ",results.inserted_id)
 
     def delete_expenses(self, month, year):
-        result=self.__expenses_db.delete_one({"MONTH": month, "YEAR":year})
+        result=self.__expenses_db.delete_many({"MONTH": month, "YEAR":year})
         print("Fixed expenses Deleted: ",result.acknowledged)
         print("Fixed expenses delete count: ",result.deleted_count)
 

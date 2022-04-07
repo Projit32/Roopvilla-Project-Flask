@@ -1,6 +1,7 @@
 from db.client import MongoDBClient
 import math
 from util.api_exceptions import RequestException
+from db.expenses import ExpensesFunctions
 
 class MonthlyFunctions:
 
@@ -9,6 +10,7 @@ class MonthlyFunctions:
     _ef_collection=MongoDBClient.emergency_funds
     _ledger_collection=MongoDBClient.ledger_data
     _electricity_collection=MongoDBClient.electricity_data
+    _expense_functions=ExpensesFunctions()
 
     def get_unique_months_of_years(self):
         years= MonthlyFunctions._ms_collection.find({}).distinct('YEAR')
@@ -242,3 +244,4 @@ class MonthlyFunctions:
                 "MONTHLY_EXP":monthly_exp
             }
         })
+        self._expense_functions.delete_expenses(month=month,year=year)
