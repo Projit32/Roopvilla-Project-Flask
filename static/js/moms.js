@@ -97,10 +97,10 @@ let fetchedMoms= new Map();
         <li class="list-group-item">
           <figure>
             <blockquote class="blockquote">
-              <p>${element.topic.replace('\n','<br>')}</p>
+              <p>${element.topic.replaceAll('\n','<br>')}</p>
             </blockquote>
             <figcaption class="blockquote-footer">
-              <cite title="Source Title">${element.decision.replace('\n','<br>')}</cite>
+              <cite title="Source Title">${element.decision.replaceAll('\n','<br>')}</cite>
             </figcaption>
           </figure>
         </li>
