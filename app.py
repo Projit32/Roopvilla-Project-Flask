@@ -1,4 +1,4 @@
-from flask import Flask, session
+from flask import Flask
 from datetime import timedelta
 from flask_session import Session
 from pymongo import MongoClient
@@ -31,4 +31,4 @@ flask_app.register_blueprint(frontend_service.frontend_pages)
 
 
 if __name__ == '__main__':
-    flask_app.run(port=int(os.getenv('PORT')), debug=False)
+    flask_app.run(port=int(os.getenv('PORT')), debug=False, host='0.0.0.0')

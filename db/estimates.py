@@ -1,4 +1,3 @@
-from unittest import result
 from db.client import MongoDBClient
 from bson import ObjectId
 
